@@ -1,0 +1,19 @@
+käyttäjä->selain: Käyttäjä painaa "New note" -painiketta
+selain->selain: Lisää uusi muistiinpano paikalliseen listaan
+selain->selain: redrawNotes
+
+note over selain:
+Funktio redrawNotes tiedostossa spa.js lisää uuden muistiinpanon
+paikalliseen muistiinpanolistaan ja tuo sen ruudulle
+end note
+
+selain->palvelin: HTTP POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+palvelin-->selain: HTTP 201 Created jos viestin vastaanotto onnistui
+
+note over selain:
+HTTP-viesti 201, "Created", indikoi selaimelle, että uusi muistiinpano
+tallennettiin onnistuneesti palvelimelle. SPA-versiossa palvelin ei
+pyydä uudelleenohjausta, jolloin selain ei hae sivua uudestaan. Muiden
+käyttäjien samaan aikaan lisäämät muistiinpanot tulevat siis näkyviin
+vasta kun käyttäjä päivittää sivun itse.
+end note
