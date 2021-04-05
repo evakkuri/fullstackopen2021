@@ -1,7 +1,13 @@
 import React from 'react'
 import Country from './Country'
 
-const CountryList = ({ countryList }) => {
+const FilterButton = ({ countryName, setFilter }) => {
+  return (
+    <button onClick={() => setFilter(countryName)}>show</button>
+  )
+}
+
+const CountryList = ({ countryList, setFilter }) => {
   console.log('CountryView: Rendering', countryList.length)
   console.log(
     'CountryView: countryList length over 10:',
@@ -23,14 +29,27 @@ const CountryList = ({ countryList }) => {
   }
 
   if (countryList.length > 10) {
-    console.log('CountryView: List too long')
+    console.log('CountryView: More than 10 matches, list too long')
     return (<p>Too many matches, specify another filter</p>)
   }
 
+
+  console.log("CountryView: Less than 10 matches, showing country names")
+
+  const countryTable = countryList.map(country => {
+    return (
+      <tr key={country.numericCode}>
+        <td>{country.name}</td>
+        <td><FilterButton countryName={country.name} setFilter={setFilter} /></td>
+      </tr>)
+  })
+
   return (
-    countryList.map(country =>
-      <p key={country.numericCode} >{country.name}</p>
-    )
+    <table>
+      <tbody>
+        {countryTable}
+      </tbody>
+    </table>
   )
 }
 

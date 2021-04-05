@@ -31,7 +31,7 @@ function App() {
   return (
     <div className="App">
       <Filter value={currFilter} handler={setFilter} />
-      <CountryList countryList={countriesFiltered} />
+      <CountryList countryList={countriesFiltered} setFilter={setFilter} />
     </div>
   );
 }
