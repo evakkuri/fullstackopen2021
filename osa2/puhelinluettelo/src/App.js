@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import PersonsView from './components/PersonsView'
-
-import axios from 'axios'
+import personsService from './services/persons'
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -11,51 +10,71 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [currFilter, setFilter] = useState('')
 
-  const hook = () => {
-    console.log('effect')
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        console.log('promise fulfilled')
-        setPersons(response.data)
+  useEffect(() => {
+    personsService
+      .getAllPersons()
+      .then(initialPersons => {
+        setPersons(initialPersons)
       })
-  }
-
-  useEffect(hook, [])
-  console.log('render', persons.length, 'notes')
+  }, [])
 
   const handleInputFieldChange = (eventHandler) => {
-    console.log(eventHandler)
     return ((event) => {
-      console.log(event.target.value)
       eventHandler(event.target.value)
     })
   }
 
   const addPerson = (event) => {
     event.preventDefault()
-    console.log("addNote", event.target)
 
     const newPerson = {
       name: newName,
       number: newNumber
     }
 
-    console.log(persons.map(person => person.name).includes(newName))
+    if (persons.map(person => person.name).includes(newName)) {
+      console.log(`Person with name ${newName} is already in phonebook, confirming number update`)
 
-    persons.map(person => person.name).includes(newName)
-      ? window.alert(`${newPerson.name} is already added to phonebook`)
-      : setPersons(persons.concat(newPerson))
+      const toUpdate = window.confirm(
+        `${newPerson.name} is already added to phonebook, replace old phone number with the one?`)
 
-    setNewName('')
-    setNewNumber('')
+      if (toUpdate) {
+        console.log(`User confirmed update for existing person ${newName}`)
+        console.log(`Updating phone number for person ${newName} to ${newNumber}`)
+
+        const personToUpdate = persons.find(p => p.name === newName)
+        const updated = { ...personToUpdate, number: newNumber }
+
+        personsService
+          .updatePerson(personToUpdate.id, newPerson)
+          .then(() => {
+            setPersons(persons.map(p => p.id !== updated.id ? p : updated))
+            setNewName('')
+            setNewNumber('')
+          })
+      }
+
+      else {
+        console.log(`User cancelled phone number update for person ${newName}`)
+      }
+    }
+
+    else {
+      console.log("Creating new person", newPerson)
+      personsService.createPerson(newPerson).then(createdPerson => {
+        console.log("New person created successfully:", createdPerson)
+        setPersons(persons.concat(createdPerson))
+        setNewName('')
+        setNewNumber('')
+      })
+    }
   }
 
   return (
     <div>
       <h2>Phonebook</h2>
       <Filter currFilter={currFilter} onChangeFunction={handleInputFieldChange(setFilter)} />
-      <h2>add a new</h2>
+      <h2>Add a new entry</h2>
       <PersonForm
         nameValue={newName}
         nameChangeHandler={handleInputFieldChange(setNewName)}
@@ -64,7 +83,7 @@ const App = () => {
         addPersonHandler={addPerson}
       />
       <h2>Numbers</h2>
-      <PersonsView currFilter={currFilter} personsList={persons} />
+      <PersonsView currFilter={currFilter} personsList={persons} setPersons={setPersons} />
     </div>
   )
 
