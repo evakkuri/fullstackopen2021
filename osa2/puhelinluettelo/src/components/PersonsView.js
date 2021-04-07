@@ -1,7 +1,7 @@
 import personsService from '../services/persons'
 
-const DeleteButton = ({ personToDelete, allPersons, setPersons }) => {
-  const deleteClick = () => {
+const DeleteButton = ({ personToDelete, allPersons, setPersons, setMessageObj }) => {
+  const deletePerson = () => {
     console.log(`Confirming deletion for person ${personToDelete.id}`)
 
     if (window.confirm(`Delete ${personToDelete.name}?`)) {
@@ -12,9 +12,13 @@ const DeleteButton = ({ personToDelete, allPersons, setPersons }) => {
         .then(setPersons(allPersons.filter(person => person.id !== personToDelete.id)))
         .catch(error => {
           console.log(error)
-          alert(
-            `Deletion of person ${personToDelete.id} was not successfull`
-          )
+
+          setMessageObj({
+            type: "errormsg",
+            text: `Information of ${personToDelete.name} has already been removed from server`
+          })
+
+          setTimeout(() => setMessageObj(null), 5000)
         })
     }
 
@@ -22,7 +26,7 @@ const DeleteButton = ({ personToDelete, allPersons, setPersons }) => {
   }
 
   return (
-    <button type="button" onClick={deleteClick}>delete</button>
+    <button type="button" onClick={deletePerson}>delete</button>
   )
 }
 
@@ -35,7 +39,7 @@ const Person = ({ person }) => {
   )
 }
 
-const PersonsView = ({ currFilter, personsList, setPersons }) => {
+const PersonsView = ({ currFilter, personsList, setPersons, setMessageObj }) => {
 
   const personsToShow = personsList
     .filter(person => {
@@ -56,6 +60,7 @@ const PersonsView = ({ currFilter, personsList, setPersons }) => {
                 personToDelete={person}
                 allPersons={personsList}
                 setPersons={setPersons}
+                setMessageObj={setMessageObj}
               />
             </td>
           </tr>

@@ -1,21 +1,21 @@
-const PersonForm = ({nameValue, nameChangeHandler, numberValue, numberChangeHandler, addPersonHandler}) => {
+import React from 'react'
+
+const PersonForm = ({ nameValue, nameChangeHandler, numberValue, numberChangeHandler, addPersonHandler }) => {
   return (
     <form onSubmit={addPersonHandler}>
-      <div>
+      <p>
         name: <input
           value={nameValue}
           onChange={nameChangeHandler}
         />
-      </div>
-      <div>
+      </p>
+      <p>
         number: <input
           value={numberValue}
           onChange={numberChangeHandler}
         />
-      </div>
-      <div>
-        <button type="submit">add</button>
-      </div>
+      </p>
+      <button type="submit">add</button>
     </form>
   )
 }
