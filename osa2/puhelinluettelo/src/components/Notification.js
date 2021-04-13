@@ -6,8 +6,6 @@ const Notification = ({ messageObj }) => {
     return null
   }
 
-  console.log("Notification - messageObj", messageObj)
-
   return (
     <div className={messageObj.type}>
       {messageObj.text}

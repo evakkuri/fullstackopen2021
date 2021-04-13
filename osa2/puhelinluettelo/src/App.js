@@ -31,7 +31,7 @@ const App = () => {
     console.log(`Person with name ${newName} is already in phonebook, confirming number update`)
 
     const toUpdate = window.confirm(
-      `${newPerson.name} is already added to phonebook, replace old phone number with the one?`)
+      `${newPerson.name} is already added to phonebook, replace old phone number with the new one?`)
 
     if (toUpdate) {
       console.log(`User confirmed update for existing person ${newName}`)
@@ -68,23 +68,37 @@ const App = () => {
 
     else {
       console.log("Creating new person", newPerson)
-      personsService.createPerson(newPerson).then(createdPerson => {
-        console.log("New person created successfully:", createdPerson)
+      personsService
+        .createPerson(newPerson)
+        .then(createdPerson => {
+          console.log("New person created successfully:", createdPerson)
 
-        setPersons(persons.concat(createdPerson))
+          setPersons(persons.concat(createdPerson))
 
-        setMessageObj({
-          type: "successmsg",
-          text: `Added ${newName}`
+          setMessageObj({
+            type: "successmsg",
+            text: `Added ${newName}`
+          })
+
+          setTimeout(() => {
+            setMessageObj(null)
+          }, 2500)
+
+          setNewName('')
+          setNewNumber('')
         })
+        .catch(error => {
+          console.log(error.response.data)
 
-        setTimeout(() => {
-          setMessageObj(null)
-        }, 5000)
+          setMessageObj({
+            type: "errormsg",
+            text: error.response.data.error
+          })
 
-        setNewName('')
-        setNewNumber('')
-      })
+          setTimeout(() => {
+            setMessageObj(null)
+          }, 2500)
+        })
     }
   }
 
