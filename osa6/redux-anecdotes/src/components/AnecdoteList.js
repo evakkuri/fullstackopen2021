@@ -3,8 +3,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { vote } from '../reducers/anecdoteReducer'
 import { setNotification } from '../reducers/notificationReducer'
 
-const Anecdote = ({ anecdote, handleVoteClick }) => {
-  return (
+const Anecdote = ({ anecdote, handleVoteClick }) => {  
+  const elem = (
     <li>
       <div>
         {anecdote.content}
@@ -15,6 +15,8 @@ const Anecdote = ({ anecdote, handleVoteClick }) => {
       </div>
     </li>
   )
+
+  return elem
 }
 
 const AnecdoteList = () => {
