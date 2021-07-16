@@ -22,14 +22,14 @@ const create = async (newObject) => {
 }
 
 const update = async (id, newBlog) => {
-  console.log(`Sending request to add like to blog ${id}`)
+  console.log(`Sending request to update blog ${id} to ${JSON.stringify(newBlog)}`)
 
   const response = await axios.put(`${baseUrl}/${id}`, newBlog)
   console.log(response.status)
   console.log(response.data)
 
   if (response.status === 200) {
-    console.log(`Successfully added like to blog ${id}`)
+    console.log(`Successfully updated blog ${id}`)
   }
 
   return response

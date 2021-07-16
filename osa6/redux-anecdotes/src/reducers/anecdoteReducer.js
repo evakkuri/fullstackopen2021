@@ -1,5 +1,3 @@
-import { useDispatch } from "react-redux"
-import { setNotification, removeNotification } from "./notificationReducer"
 import anecdoteService from '../services/anecdotes'
 
 const anecdotesAtStart = [
@@ -48,13 +46,6 @@ const anecdoteReducer = (state = [], action) => {
       return action.data
     
     default: return state
-  }
-}
-
-export const voteOld = (id) => {
-  return {
-    type: 'VOTE',
-    id
   }
 }
 

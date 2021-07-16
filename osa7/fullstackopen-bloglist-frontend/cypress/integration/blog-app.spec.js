@@ -60,6 +60,7 @@ describe('Blog app ', function () {
       cy.get('#input-url').type('testurl')
       cy.get('#submit-blog-form').click()
       cy.contains('Test blog title')
+      cy.get('[id$=-testblogtitle]').contains('Test blog title')
     })
 
     describe('and a blog exists', function () {
@@ -125,7 +126,7 @@ describe('Blog app ', function () {
           .contains('Likes: 1')
       })
 
-      it.only('blogs are displayed in order of most likes', function () {
+      it('blogs are displayed in order of most likes', function () {
         cy.get('[id$=-second]')
           .contains('Show more')
           .click()

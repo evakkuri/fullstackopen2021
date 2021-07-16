@@ -4,18 +4,28 @@ import Notification from './components/Notification/Notification'
 import BlogForm from './components/BlogForm/BlogForm'
 import LoginForm from './components/LoginForm/LoginForm'
 import Togglable from './components/Togglable/Togglable'
+import { addLike, deleteBlog, initializeBlogs } from './reducers/blogReducer'
+import { useDispatch, useSelector } from 'react-redux'
 
 import blogService from './services/blogs'
 import loginService from './services/login'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
+  //const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [notification, setNotification] = useState(null)
 
+  const dispatch = useDispatch()
 
+  useEffect(() => {
+    dispatch(initializeBlogs())
+  }, [dispatch])
+
+  const blogs = useSelector(state => state.blogs)
+
+  /*
   useEffect(() => {
     try {
       blogService.getAll().then(blogs =>
@@ -25,6 +35,7 @@ const App = () => {
       return []
     }
   }, [])
+  */
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedInBlogAppUser')
@@ -71,8 +82,7 @@ const App = () => {
     console.log(`Updating blog ID ${blog.id} with new value ${JSON.stringify(updatedBlog)}`)
 
     try {
-      blogService.update(blog.id, updatedBlog)
-      setBlogs(blogs.map((blog) => blog.id === updatedBlog.id ? updatedBlog : blog))
+      dispatch(addLike(blog.id))
     } catch (exception) {
       console.log(`Error when adding a like to blog ${blog.id}. Exception: ${exception}`)
       setNotification({
@@ -83,6 +93,18 @@ const App = () => {
         setNotification(null)
       }, 5000)
     }
+  }
+
+  /**
+   * Button click function to delete a blog
+   */
+  const handleDeleteBlog = async (blog) => {
+    const confirmDelete = window.confirm(
+      `Delete blog "${blog.title}" by ${blog.author}?`
+    )
+    console.log(confirmDelete)
+
+    if (confirmDelete) dispatch(deleteBlog(blog.id))
   }
 
   const loginForm = () => {
@@ -102,10 +124,7 @@ const App = () => {
   const blogForm = () => (
     <Togglable buttonLabel='Add new blog'>
       <BlogForm
-        createBlog={blogService.create}
         setNotification={setNotification}
-        blogs={blogs}
-        setBlogs={setBlogs}
       />
     </Togglable>
   )
@@ -131,8 +150,7 @@ const App = () => {
             <Blog
               key={blog.id}
               blog={blog}
-              blogs={blogs}
-              setBlogs={setBlogs}
+              handleDeleteBlog={handleDeleteBlog}
               handleAddLike={handleAddLike}
             />
           )}

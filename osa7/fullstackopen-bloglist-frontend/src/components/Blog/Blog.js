@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 
-import blogService from '../../services/blogs'
+//import blogService from '../../services/blogs'
 
-const Blog = ({ blog, blogs, setBlogs, handleAddLike }) => {
+const Blog = ({ blog, handleDeleteBlog, handleAddLike }) => {
   const [showFullInfo, setShowFullInfo] = useState(false)
 
   const toggleVisibility = () => {
@@ -33,21 +33,6 @@ const Blog = ({ blog, blogs, setBlogs, handleAddLike }) => {
     return [blogId, blogTitle.replace(/\s+/g, '').toLowerCase()].join('-')
   }
 
-  /**
-   * Button click function to delete a blog
-   */
-  const deleteBlog = () => {
-    const confirmDelete = window.confirm(
-      `Delete blog "${blog.title}" by ${blog.author}?`
-    )
-    console.log(confirmDelete)
-
-    if (confirmDelete) blogService.remove(blog.id)
-
-    const blogIdToRemove = blog.id
-    setBlogs(blogs.filter((blog) => blog.id !== blogIdToRemove))
-  }
-
   if (!showFullInfo)
     return (
       <div id={getBlogIdField(blog.id, blog.title)} style={blogStyle} className='blog'>
@@ -73,7 +58,7 @@ const Blog = ({ blog, blogs, setBlogs, handleAddLike }) => {
         Added by: {blog.user.name}
       </div>
       <div style={deleteButtonVisible}>
-        <button id={`delete-blog-${blog.id}`} onClick={deleteBlog}>Delete blog</button>
+        <button id={`delete-blog-${blog.id}`} onClick={() => handleDeleteBlog(blog)}>Delete blog</button>
       </div>
     </div>
   )

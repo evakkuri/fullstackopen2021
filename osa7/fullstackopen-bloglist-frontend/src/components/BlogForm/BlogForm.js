@@ -1,6 +1,11 @@
 import React, { useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { createBlog } from '../../reducers/blogReducer'
 
-const BlogForm = ({ createBlog, setNotification, blogs, setBlogs }) => {
+const BlogForm = ({ setNotification }) => {
+
+  const dispatch = useDispatch()
+
   const [newBlog, setNewBlog] = useState({
     title: '',
     author: '',
@@ -12,24 +17,32 @@ const BlogForm = ({ createBlog, setNotification, blogs, setBlogs }) => {
     console.log('Adding new blog...')
 
     try {
+      /*
       const blog = await createBlog({
         title: newBlog.title,
         author: newBlog.author,
         url: newBlog.url
       })
+      */
 
-      console.log(`A new blog "${blog.title}" by ${blog.author} was added successfully`)
+      dispatch(createBlog({
+        title: newBlog.title,
+        author: newBlog.author,
+        url: newBlog.url
+      }))
+
+      console.log(`A new blog "${newBlog.title}" by ${newBlog.author} was added successfully`)
 
       setNotification({
         type: 'success',
-        content: `A new blog "${blog.title}" by ${blog.author} was added successfully`
+        content: `A new blog "${newBlog.title}" by ${newBlog.author} was added successfully`
       })
 
       setTimeout(() => {
         setNotification(null)
       }, 5000)
 
-      setBlogs(blogs.concat(blog))
+      //setBlogs(blogs.concat(blog))
 
       setNewBlog({
         title: '',
