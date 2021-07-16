@@ -1,0 +1,23 @@
+### Success
+POST http://localhost:3003/api/blogs/
+content-type: application/json
+Authorization: Bearer 
+
+{
+  "title": "Test blog",
+  "author": "Test Author",
+  "url": "https://testurl",
+  "likes": 0
+}
+
+### Fail: No authorization
+
+POST http://localhost:3001/api/blogs/
+content-type: application/json
+
+{
+  "title": "Test blog",
+  "author": "6081913578795d7cda43e536",
+  "url": "https://testurl",
+  "likes": 0
+}

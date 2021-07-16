@@ -1,0 +1,24 @@
+.notification-wrapper {
+  padding: 15px;
+  margin-bottom: 15px;
+}
+
+.notification-wrapper h2 {
+  margin: 0 0 0 0;
+}
+
+.notification-wrapper.success {
+  border: #6DA06F solid 1px;
+}
+
+.success h2 {
+  color: #6DA06F;
+}
+
+.notification-wrapper.error {
+  border: #F56260 solid 1px;
+}
+
+.error h2 {
+  color: #F56260;
+}
