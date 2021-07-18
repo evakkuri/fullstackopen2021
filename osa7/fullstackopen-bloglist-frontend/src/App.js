@@ -4,18 +4,17 @@ import Notification from './components/Notification/Notification'
 import BlogForm from './components/BlogForm/BlogForm'
 import LoginForm from './components/LoginForm/LoginForm'
 import Togglable from './components/Togglable/Togglable'
-import { addLike, deleteBlog, initializeBlogs } from './reducers/blogReducer'
+import { initializeBlogs } from './reducers/blogReducer'
+import { setNotification } from './reducers/notificationReducer'
 import { useDispatch, useSelector } from 'react-redux'
 
 import blogService from './services/blogs'
 import loginService from './services/login'
 
 const App = () => {
-  //const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [notification, setNotification] = useState(null)
 
   const dispatch = useDispatch()
 
@@ -24,18 +23,6 @@ const App = () => {
   }, [dispatch])
 
   const blogs = useSelector(state => state.blogs)
-
-  /*
-  useEffect(() => {
-    try {
-      blogService.getAll().then(blogs =>
-        setBlogs(blogs.sort((blog1, blog2) => blog2.likes - blog1.likes))
-      )
-    } catch (exception) {
-      return []
-    }
-  }, [])
-  */
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedInBlogAppUser')
@@ -63,48 +50,15 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (exception) {
-      setNotification({ type: 'error', content: 'Wrong username or password' })
-      setTimeout(() => {
-        setNotification({})
-      }, 5000)
+      dispatch(setNotification(
+        'error', 'Wrong username or password'
+      ))
     }
   }
 
   const handleLogout = () => {
     window.localStorage.removeItem('loggedInBlogAppUser')
     window.location.reload()
-  }
-
-  const handleAddLike = async (blog, event) => {
-    event.preventDefault()
-
-    const updatedBlog = { ...blog, likes: blog.likes + 1 }
-    console.log(`Updating blog ID ${blog.id} with new value ${JSON.stringify(updatedBlog)}`)
-
-    try {
-      dispatch(addLike(blog.id))
-    } catch (exception) {
-      console.log(`Error when adding a like to blog ${blog.id}. Exception: ${exception}`)
-      setNotification({
-        type: 'error',
-        content: `Error when adding a like to blog ${blog.id}. Exception: ${exception}`
-      })
-      setTimeout(() => {
-        setNotification(null)
-      }, 5000)
-    }
-  }
-
-  /**
-   * Button click function to delete a blog
-   */
-  const handleDeleteBlog = async (blog) => {
-    const confirmDelete = window.confirm(
-      `Delete blog "${blog.title}" by ${blog.author}?`
-    )
-    console.log(confirmDelete)
-
-    if (confirmDelete) dispatch(deleteBlog(blog.id))
   }
 
   const loginForm = () => {
@@ -134,7 +88,7 @@ const App = () => {
       <h1>Cool Blog App</h1>
 
       <div>
-        <Notification notifObj={notification} />
+        <Notification />
       </div>
 
       {user === null ?
@@ -146,12 +100,10 @@ const App = () => {
           </p>
           {blogForm()}
           <h2>Stored blogs</h2>
-          {blogs.map(blog =>
+          {blogs.data.map(blog =>
             <Blog
               key={blog.id}
               blog={blog}
-              handleDeleteBlog={handleDeleteBlog}
-              handleAddLike={handleAddLike}
             />
           )}
         </div>

@@ -1,18 +1,18 @@
 import React from 'react'
+import { useSelector } from 'react-redux'
 import './Notification.css'
 
-const Notification = ({ notifObj }) => {
-  if (notifObj === null) {
-    return null
-  }
+const Notification = () => {
 
-  if (!('type' in notifObj) || !('content' in notifObj)) {
+  const notification = useSelector(state => state.notification)
+
+  if (notification.type === '' || notification.content === '') {
     return null
   }
 
   return (
-    <div className={`notification-wrapper ${notifObj.type}`}>
-      <h2>{notifObj.content}</h2>
+    <div className={`notification-wrapper ${notification.type}`}>
+      <h2>{notification.content}</h2>
     </div>
   )
 }

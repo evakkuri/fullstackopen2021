@@ -53,14 +53,21 @@ describe('Blog app ', function () {
       cy.login({ username: 'test', password: 'test' })
     })
 
-    it('a new blog entry can be created', function () {
+    it('a new blog entry can be created and gives success notification', function () {
       cy.contains('Add new blog').click()
       cy.get('#input-title').type('Test blog title')
       cy.get('#input-author').type('Test Author')
       cy.get('#input-url').type('testurl')
       cy.get('#submit-blog-form').click()
-      cy.contains('Test blog title')
+      cy.get('.notification-wrapper').contains('Test blog title')
       cy.get('[id$=-testblogtitle]').contains('Test blog title')
+    })
+
+    it('an invalid blog entry gives error notification', function () {
+      cy.contains('Add new blog').click()
+      cy.get('#input-title').type('If only title given, give error notification')
+      cy.get('#submit-blog-form').click()
+      cy.get('.error').contains('Error')
     })
 
     describe('and a blog exists', function () {
