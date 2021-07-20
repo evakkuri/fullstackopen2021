@@ -93,7 +93,7 @@ describe('Blog app ', function () {
         cy.contains('Likes: 2')
       })
 
-      it('user who created blog can delete it', function() {
+      it('user who created blog can delete it', function () {
         cy.get('[id$=-testblogtitle]')
           .contains('Show more')
           .click()
@@ -101,7 +101,7 @@ describe('Blog app ', function () {
         cy.get('[id$=-testblogtitle]').should('not.exist')
       })
 
-      it('user cannot delete a blog added by another user', function() {
+      it('user cannot delete a blog added by another user', function () {
         const user = {
           name: 'Another User',
           username: 'test2',
@@ -163,6 +163,32 @@ describe('Blog app ', function () {
           cy.wrap(blogs[1]).contains('third')
           cy.wrap(blogs[2]).contains('first')
         })
+      })
+    })
+  })
+
+  describe('When on the "Users" page', function () {
+
+    describe.only('and multiple users with blogs exist', function () {
+      beforeEach(function () {
+        cy.login({ username: 'test', password: 'test' })
+        cy.createBlog({ title: 'first', author: 'first', url: 'first' })
+        cy.createBlog({ title: 'second', author: 'second', url: 'second' })
+
+        const user2 = {
+          name: 'Test User 2',
+          username: 'test2',
+          password: 'test2'
+        }
+        cy.request('POST', 'http://localhost:3003/api/users/', user2)
+        cy.login({ username: 'test2', password: 'test2' })
+        cy.createBlog({ title: 'first', author: 'first', url: 'first' })
+
+        cy.visit('http://localhost:3000/users')
+      })
+
+      it('info is shown for all users', function () {
+        cy.contains(2)
       })
     })
   })

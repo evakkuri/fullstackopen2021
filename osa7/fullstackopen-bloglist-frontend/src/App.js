@@ -4,14 +4,18 @@ import BlogForm from './components/BlogForm/BlogForm'
 import LoginForm from './components/LoginForm/LoginForm'
 import Togglable from './components/Togglable/Togglable'
 import BlogList from './components/BlogList/BlogList'
+import UserList from './components/UserList/UserList'
 import { initializeBlogs } from './reducers/blogReducer'
 import { initializeUser, logout } from './reducers/loginReducer'
+import { initializeUserList } from './reducers/userReducer'
 import { useDispatch, useSelector } from 'react-redux'
+import { Switch, Route, useHistory } from 'react-router-dom'
 
 const App = () => {
 
   const dispatch = useDispatch()
   const user = useSelector(state => state.login)
+  const history = useHistory()
 
   useEffect(() => {
     dispatch(initializeUser())
@@ -21,8 +25,13 @@ const App = () => {
     dispatch(initializeBlogs())
   }, [dispatch])
 
+  useEffect(() => {
+    dispatch(initializeUserList())
+  }, [])
+
   const handleLogout = () => {
     dispatch(logout())
+    history.push('/')
   }
 
   const loginForm = () => {
@@ -43,19 +52,31 @@ const App = () => {
     <div>
       <h1>Cool Blog App</h1>
       <div>
-        <Notification />
-      </div>
-      {user === null ?
-        loginForm() :
-        <div>
+        {user === null ?
+          loginForm() :
           <p>
             {user.name} is logged in
             <button id='logout' onClick={handleLogout}>Log out</button>
           </p>
-          {blogForm()}
-          <BlogList />
-        </div>
-      }
+        }
+      </div>
+      <Switch>
+        <Route path='/users'>
+          <UserList />
+        </Route>
+        <Route path='/'>
+          <div>
+            <Notification />
+          </div>
+          {user === null ?
+            null :
+            <div>
+              {blogForm()}
+              <BlogList />
+            </div>
+          }
+        </Route>
+      </Switch>
     </div>
   )
 }
