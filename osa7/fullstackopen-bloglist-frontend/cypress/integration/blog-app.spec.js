@@ -53,6 +53,11 @@ describe('Blog app ', function () {
       cy.login({ username: 'test', password: 'test' })
     })
 
+    it('user can log out', function () {
+      cy.get('#logout').click()
+      cy.contains('Log in')
+    })
+
     it('a new blog entry can be created and gives success notification', function () {
       cy.contains('Add new blog').click()
       cy.get('#input-title').type('Test blog title')

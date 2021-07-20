@@ -72,10 +72,15 @@ export const initializeBlogs = () => {
         data: sortedArray,
       })
     } catch (error) {
+      const errorContent = error.response ? error.response.data.error : error
       dispatch({
         type: 'INIT_BLOGS_FAILURE',
-        data: error.response.data.error
+        data: errorContent
       })
+      dispatch(setNotification(
+        'error',
+        errorContent
+      ))
     }
   }
 }

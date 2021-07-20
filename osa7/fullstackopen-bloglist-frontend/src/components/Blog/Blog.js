@@ -1,13 +1,7 @@
 import React, { useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { addLike, deleteBlog } from '../../reducers/blogReducer'
 
-//import blogService from '../../services/blogs'
-
-const Blog = ({ blog }) => {
+const Blog = ({ blog, handleAddLike, handleDeleteBlog }) => {
   const [showFullInfo, setShowFullInfo] = useState(false)
-
-  const dispatch = useDispatch()
 
   const toggleVisibility = () => {
     setShowFullInfo(!showFullInfo)
@@ -35,31 +29,6 @@ const Blog = ({ blog }) => {
 
   const getBlogIdField = (blogId, blogTitle) => {
     return [blogId, blogTitle.replace(/\s+/g, '').toLowerCase()].join('-')
-  }
-
-  const handleAddLike = async (blog, event) => {
-    event.preventDefault()
-
-    const updatedBlog = { ...blog, likes: blog.likes + 1 }
-    console.log(`Updating blog ID ${blog.id} with new value ${JSON.stringify(updatedBlog)}`)
-
-    try {
-      dispatch(addLike(blog.id))
-    } catch (exception) {
-      console.log(`Error when adding a like to blog ${blog.id}. Exception: ${exception}`)
-    }
-  }
-
-  /**
-   * Button click function to delete a blog
-   */
-  const handleDeleteBlog = async (blog) => {
-    const confirmDelete = window.confirm(
-      `Delete blog "${blog.title}" by ${blog.author}?`
-    )
-    console.log(confirmDelete)
-
-    if (confirmDelete) dispatch(deleteBlog(blog.id))
   }
 
   if (!showFullInfo)
