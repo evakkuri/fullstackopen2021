@@ -2,6 +2,7 @@ import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { deleteBlog } from '../../reducers/blogReducer'
 import Blog from '../Blog/Blog'
+import { Table } from 'react-bootstrap'
 
 const BlogList = ({ handleAddLike }) => {
   const dispatch = useDispatch()
@@ -22,17 +23,21 @@ const BlogList = ({ handleAddLike }) => {
   return (
     <div>
       <h2>Stored blogs</h2>
-      <ul>
-        {blogs.data
-          .map(blog =>
-            <Blog
-              key={blog.id}
-              blog={blog}
-              handleAddLike={handleAddLike}
-              handleDeleteBlog={handleDeleteBlog}
-            />
-          )}
-      </ul>
+      <Table>
+        <tbody>
+          {blogs.data
+            .map(blog =>
+              <tr key={blog.id}>
+                <Blog
+                  key={blog.id}
+                  blog={blog}
+                  handleAddLike={handleAddLike}
+                  handleDeleteBlog={handleDeleteBlog}
+                />
+              </tr>
+            )}
+        </tbody>
+      </Table>
     </div>
   )
 }
