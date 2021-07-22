@@ -1,16 +1,24 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
+import { Link } from 'react-router-dom'
 import './UserList.css'
 
+const getUserIdField = ({ id, name }) => {
+  return [id, name.replace(/\s+/g, '').toLowerCase()].join('-')
+}
+
 const UserInfo = ({ user }) => {
+  if (!user) { return null }
+
   console.log(user)
   const numBlogs = user.blogs.length
   console.log(numBlogs)
 
   return (
     <tr>
-      <td>{user.name}</td>
-      <td>{numBlogs}</td>
+      <td id={[getUserIdField(user), 'field', 'name'].join('-')}>
+        <Link to={`users/${user.id}`}>{user.name}</Link></td>
+      <td id={[getUserIdField(user), 'field', 'numBlogs'].join('-')}>{numBlogs}</td>
     </tr>
   )
 }
@@ -23,7 +31,7 @@ const UserList = () => {
   return (
     <div>
       <h2>Users</h2>
-      <table>
+      <table id='users-table'>
         <thead>
           <tr>
             <td>Name</td>

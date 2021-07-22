@@ -169,7 +169,7 @@ describe('Blog app ', function () {
 
   describe('When on the "Users" page', function () {
 
-    describe.only('and multiple users with blogs exist', function () {
+    describe('and multiple users with blogs exist', function () {
       beforeEach(function () {
         cy.login({ username: 'test', password: 'test' })
         cy.createBlog({ title: 'first', author: 'first', url: 'first' })
@@ -184,11 +184,19 @@ describe('Blog app ', function () {
         cy.login({ username: 'test2', password: 'test2' })
         cy.createBlog({ title: 'first', author: 'first', url: 'first' })
 
+        const user3 = {
+          name: 'Test User 3',
+          username: 'test3',
+          password: 'test3'
+        }
+        cy.request('POST', 'http://localhost:3003/api/users/', user3)
+        cy.login({ username: 'test3', password: 'test3' })
+
         cy.visit('http://localhost:3000/users')
       })
 
       it('info is shown for all users', function () {
-        cy.contains(2)
+        cy.get('#users-table')
       })
     })
   })

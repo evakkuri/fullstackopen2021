@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { Link } from 'react-router-dom'
 
 const Blog = ({ blog, handleAddLike, handleDeleteBlog }) => {
   const [showFullInfo, setShowFullInfo] = useState(false)
@@ -34,16 +35,19 @@ const Blog = ({ blog, handleAddLike, handleDeleteBlog }) => {
   if (!showFullInfo)
     return (
       <div id={getBlogIdField(blog.id, blog.title)} style={blogStyle} className='blog'>
-        {blog.author}: {blog.title} ({blog.likes})
-        <button id={`show-more-${blog.id}`} onClick={toggleVisibility}>Show more</button>
+        <Link to={`/blogs/${blog.id}`}>{blog.title}</Link> ({blog.likes})
+        <button onClick={toggleVisibility}>Show more</button>
       </div>
     )
 
   else return (
     <div id={getBlogIdField(blog.id, blog.title)} style={blogStyle} className='blog'>
       <p>
-        {blog.author}: {blog.title}
+        <Link to={`/blogs/${blog.id}`}>{blog.title}</Link> ({blog.likes})
         <button id={`show-less-${blog.id}`} onClick={toggleVisibility}>Show less</button>
+      </p>
+      <p>
+        Author: {blog.author}
       </p>
       <p>
         URL: {blog.url}
