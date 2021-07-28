@@ -8,7 +8,43 @@ type Result = {
   average: number
 }
 
-const excerciseCalculator = (dailyExerciseHrs: Array<number>, targetAvgHours: number) : Result => {
+type Input = {
+  dailyExerciseHrs: Array<number>,
+  targetAvgHrs: number
+}
+
+const exerciseParseArguments = (args: Array<string>): Input => {
+  if (args.length < 3) throw new Error('Not enough arguments');
+
+  //console.log(args)
+  //console.log(args.slice(2))
+
+  const argNums = args
+    .slice(2)
+    .map((elem) => Number(elem))
+
+  if (argNums.some((elem) => isNaN(elem))) {
+    throw new Error('Provided values were not numbers!')
+  }
+
+  //console.log(argNums)
+
+  const targetAvgHrs = argNums[0]
+
+  //console.log(targetAvgHrs)
+
+  const dailyExerciseHrs = argNums.slice(1)
+
+  //console.log(dailyExerciseHrs)
+
+  return {
+    dailyExerciseHrs,
+    targetAvgHrs
+  }
+}
+
+
+const excerciseCalculator = (dailyExerciseHrs: Array<number>, targetAvgHours: number): Result => {
   const averageHrs = dailyExerciseHrs.reduce((val1, val2) => val1 + val2) / dailyExerciseHrs.length
 
   type Rating = {
@@ -17,14 +53,14 @@ const excerciseCalculator = (dailyExerciseHrs: Array<number>, targetAvgHours: nu
   }
 
   const rating = (averageHrs: number, targetAvgHours: number): Rating => {
-  
+
     if (averageHrs < targetAvgHours) {
-      if (Math.abs((averageHrs - targetAvgHours) / targetAvgHours) <= 0.1) {
-        return {rating: 2, ratingDescription: 'Not bad but could be better'}
+      if (Math.abs((averageHrs - targetAvgHours) / targetAvgHours) <= 0.2) {
+        return { rating: 2, ratingDescription: 'Not bad but could be better' }
       }
-      else return {rating: 1, ratingDescription: 'Abysmal...'}
+      else return { rating: 1, ratingDescription: 'Abysmal...' }
     }
-    else return {rating: 3, ratingDescription: 'Great success!'}
+    else return { rating: 3, ratingDescription: 'Great success!' }
   }
 
   const actualRating = rating(averageHrs, targetAvgHours)
@@ -42,5 +78,12 @@ const excerciseCalculator = (dailyExerciseHrs: Array<number>, targetAvgHours: nu
   return result
 }
 
-console.log(excerciseCalculator([3, 0, 2, 4.5, 0, 3, 1], 2))
-console.log(excerciseCalculator([0, 0, 0, 0, 0, 0, 0], 2))
+//console.log(excerciseCalculator([3, 0, 2, 4.5, 0, 3, 1], 2))
+//console.log(excerciseCalculator([0, 0, 0, 0, 0, 0, 0], 2))
+
+try {
+  const {dailyExerciseHrs, targetAvgHrs} = exerciseParseArguments(process.argv);
+  console.log(excerciseCalculator(dailyExerciseHrs, targetAvgHrs));
+} catch (e) {
+  console.log('Error, something bad happened, message: ', e.message);
+}
