@@ -3,7 +3,7 @@ type Size = {
   weightKg: number
 }
 
-const bmiParseArguments = (args: Array<string>): Size => {
+const bmiParseCliArguments = (args: Array<string>): Size => {
   if (args.length < 4) throw new Error('Not enough arguments');
   if (args.length > 4) throw new Error('Too many arguments');
 
@@ -28,8 +28,10 @@ const calculateBmi = (heightCm: number, weightKg: number): string => {
 }
 
 try {
-  const { heightCm, weightKg } = bmiParseArguments(process.argv);
+  const { heightCm, weightKg } = bmiParseCliArguments(process.argv);
   console.log(calculateBmi(heightCm, weightKg));
 } catch (e) {
   console.log('Error, something bad happened, message: ', e.message);
 }
+
+export default calculateBmi
