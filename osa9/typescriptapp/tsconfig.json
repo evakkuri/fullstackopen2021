@@ -11,5 +11,8 @@
     "alwaysStrict": true,
     "esModuleInterop": true,
     "declaration": true,
-  }
+  },
+  "compileOnSave": true,
+  "include": [".eslintrc.js", "*.ts", "*.js", "**/*.ts", "**/*.js"],
+  "allowJs": true
 }
