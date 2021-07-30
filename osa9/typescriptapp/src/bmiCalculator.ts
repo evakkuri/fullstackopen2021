@@ -27,12 +27,14 @@ const calculateBmi = (heightCm: number, weightKg: number): string => {
   else return 'BMI not normal';
 };
 
-try {
-  const { heightCm, weightKg } = bmiParseCliArguments(process.argv);
-  console.log(calculateBmi(heightCm, weightKg));
-} catch (e) {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  console.log('Error, something bad happened, message: ', e.message);
+export const runBmiCalculator = () => {
+  try {
+    const { heightCm, weightKg } = bmiParseCliArguments(process.argv);
+    console.log(calculateBmi(heightCm, weightKg));
+  } catch (e) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    console.log('Error, something bad happened, message: ', e.message);
+  }
 }
 
 export default calculateBmi;

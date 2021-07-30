@@ -13,11 +13,8 @@ type Input = {
   targetAvgHrs: number
 };
 
-const exerciseParseArguments = (args: Array<string>): Input => {
+const exerciseParseCliArguments = (args: Array<string>): Input => {
   if (args.length < 3) throw new Error('Not enough arguments');
-
-  //console.log(args)
-  //console.log(args.slice(2))
 
   const argNums = args
     .slice(2)
@@ -27,15 +24,8 @@ const exerciseParseArguments = (args: Array<string>): Input => {
     throw new Error('Provided values were not numbers!');
   }
 
-  //console.log(argNums)
-
   const targetAvgHrs = argNums[0];
-
-  //console.log(targetAvgHrs)
-
   const dailyExerciseHrs = argNums.slice(1);
-
-  //console.log(dailyExerciseHrs)
 
   return {
     dailyExerciseHrs,
@@ -78,13 +68,21 @@ const excerciseCalculator = (dailyExerciseHrs: Array<number>, targetAvgHours: nu
   return result;
 };
 
+export const runExerciseCalculator = () => {
+  try {
+    const { dailyExerciseHrs, targetAvgHrs } = exerciseParseCliArguments(process.argv);
+    console.log(excerciseCalculator(dailyExerciseHrs, targetAvgHrs));
+  } catch (e) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    console.log('Error, something bad happened, message: ', e.message);
+  }
+}
+
+export default excerciseCalculator;
+
 //console.log(excerciseCalculator([3, 0, 2, 4.5, 0, 3, 1], 2))
 //console.log(excerciseCalculator([0, 0, 0, 0, 0, 0, 0], 2))
 
-try {
-  const { dailyExerciseHrs, targetAvgHrs } = exerciseParseArguments(process.argv);
-  console.log(excerciseCalculator(dailyExerciseHrs, targetAvgHrs));
-} catch (e) {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  console.log('Error, something bad happened, message: ', e.message);
-}
+/*
+
+*/
