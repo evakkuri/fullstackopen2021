@@ -7,8 +7,6 @@ const patients: Patient[] = patientData
     dateOfBirth: new Date(patient.dateOfBirth)
   })) as Array<Patient>;
 
-console.log(patients);
-
 const getPatients = (): Patient[] => {
   return patients;
 };
