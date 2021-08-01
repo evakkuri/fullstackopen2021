@@ -8,5 +8,5 @@ const getDiagnoses = (): Array<Diagnosis> => {
 };
 
 export default {
-  getDiagnoses
+  getDiagnoses,
 };
