@@ -43,7 +43,8 @@ type PatientFields = {
   dateOfBirth: unknown,
   ssn: unknown,
   gender: unknown,
-  occupation: unknown
+  occupation: unknown,
+  entries?: unknown
 };
 
 type NewPatientFields = Omit<PatientFields, 'id'>;
@@ -54,7 +55,8 @@ export const toNewPatient = ({name, dateOfBirth, ssn, gender, occupation}: NewPa
     dateOfBirth: parseDate('dateOfBirth', dateOfBirth),
     ssn: parseStringField('ssn', ssn),
     gender: parseGender('gender', gender),
-    occupation: parseStringField('occupation', occupation)
+    occupation: parseStringField('occupation', occupation),
+    entries: []
   };
 
   return patient;

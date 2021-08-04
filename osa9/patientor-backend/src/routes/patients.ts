@@ -13,6 +13,7 @@ router.get('/', (_req, res) => {
 
 router.get('/:id', (req, res) => {
   const patient = patientService.findById(req.params.id);
+  console.log(patient);
   patient ? res.send(patient) : res.sendStatus(404);
 });
 

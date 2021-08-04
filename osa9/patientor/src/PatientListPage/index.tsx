@@ -57,7 +57,7 @@ const PatientListPage = () => {
               <Table.Cell>{patient.gender}</Table.Cell>
               <Table.Cell>{patient.occupation}</Table.Cell>
               <Table.Cell>
-                <HealthRatingBar showText={false} rating={1} />
+                <HealthRatingBar showText={true} rating={1} />
               </Table.Cell>
             </Table.Row>
           ))}
