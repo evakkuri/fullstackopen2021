@@ -1,6 +1,7 @@
 import React from "react";
 import axios from "axios";
 import { Container, Table, Button } from "semantic-ui-react";
+import { Link } from "react-router-dom";
 
 import { PatientFormValues } from "../AddPatientModal/AddPatientForm";
 import AddPatientModal from "../AddPatientModal";
@@ -36,6 +37,10 @@ const PatientListPage = () => {
     }
   };
 
+  const isPatient = (patient: Patient | undefined): patient is Patient => {
+    return patient ? true : false;
+  };
+
   return (
     <div className="App">
       <Container textAlign="center">
@@ -51,16 +56,18 @@ const PatientListPage = () => {
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {Object.values(patients).map((patient: Patient) => (
-            <Table.Row key={patient.id}>
-              <Table.Cell>{patient.name}</Table.Cell>
-              <Table.Cell>{patient.gender}</Table.Cell>
-              <Table.Cell>{patient.occupation}</Table.Cell>
-              <Table.Cell>
-                <HealthRatingBar showText={true} rating={1} />
-              </Table.Cell>
-            </Table.Row>
-          ))}
+          {Object.values(patients)
+            .filter((patient) => isPatient(patient))
+            .map((patient) => (
+              <Table.Row key={(patient as Patient).id}>
+                <Table.Cell><Link to={`patients/${(patient as Patient).id}`}>{(patient as Patient).name}</Link></Table.Cell>
+                <Table.Cell>{(patient as Patient).gender}</Table.Cell>
+                <Table.Cell>{(patient as Patient).occupation}</Table.Cell>
+                <Table.Cell>
+                  <HealthRatingBar showText={true} rating={1} />
+                </Table.Cell>
+              </Table.Row>
+            ))}
         </Table.Body>
       </Table>
       <AddPatientModal

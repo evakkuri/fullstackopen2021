@@ -38,5 +38,13 @@
     "ssn": "090471-8890",
     "gender": "male",
     "occupation": "Digital evangelist"
+  },
+  {
+    "id": "c5ff0e40-fbc1-474f-b642-b98e818539f5",
+    "name": "Test Patient",
+    "dateOfBirth": "1971-02-03",
+    "ssn": "000000-0000",
+    "gender": "other",
+    "occupation": "Test subject"
   }
 ]
