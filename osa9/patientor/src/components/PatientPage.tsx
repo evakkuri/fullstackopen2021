@@ -1,7 +1,7 @@
 import axios from "axios";
 import React from "react";
 import { useParams } from "react-router";
-import { Icon } from "semantic-ui-react";
+import { Icon, Card } from "semantic-ui-react";
 import { SemanticICONS } from "semantic-ui-react/dist/commonjs/generic";
 
 import { apiBaseUrl } from "../constants";
@@ -11,7 +11,25 @@ import { addPatient } from "../state/reducer";
 import { Entry } from "../types";
 import { assertNever } from "../utils";
 
+const genderToIcon: { [id: string]: SemanticICONS | undefined } = {
+  male: "mars",
+  female: "venus",
+  other: "neuter"
+};
+
+const entryTypeToIcon: { [id: string]: SemanticICONS | undefined } = {
+  Hospital: "hospital",
+  HealthCheck: "doctor",
+  OccupationalHealthcare: "stethoscope"
+};
+
 const EntryList = (props: { entryList: Entry[] }) => {
+  if (props.entryList.length == 0) {
+    return (
+      <i>No entries found.</i>
+    );
+  }
+
   const [{ diagnoses },] = useStateValue();
 
   const getDiagnosisDesc = (code: string) => {
@@ -30,7 +48,8 @@ const EntryList = (props: { entryList: Entry[] }) => {
         return (
           <div>
             <ul>
-              {entry.diagnosisCodes?.map((code) => <li key={`${entry.id}-${code}`}>{getDiagnosisDesc(code)}</li>)}
+              {entry.diagnosisCodes?.map((code) =>
+                <li key={`${entry.id}-${code}`}>{getDiagnosisDesc(code)}</li>)}
             </ul>
           </div>
         );
@@ -38,8 +57,10 @@ const EntryList = (props: { entryList: Entry[] }) => {
         return (
           <div>
             <ul>
-              {entry.diagnosisCodes?.map((code) => <li key={`${entry.id}-${code}`}>{getDiagnosisDesc(code)}</li>)}
+              {entry.diagnosisCodes?.map((code) =>
+                <li key={`${entry.id}-${code}`}>{getDiagnosisDesc(code)}</li>)}
             </ul>
+            <p>Employer: {entry.employerName}</p>
           </div>
         );
       default:
@@ -48,18 +69,23 @@ const EntryList = (props: { entryList: Entry[] }) => {
   };
 
   return (
-    <div>
+    <Card.Group>
       {props.entryList.map((entry) => {
         return (
-          <div key={entry.id}>
-            <p>
-              <span>{entry.date} <i>{entry.description}</i></span>
-            </p>
-            {renderEntry(entry)}
-          </div>
+          <Card key={entry.id} fluid>
+            <Card.Content>
+              <Card.Header>
+                {entry.date} <Icon name={entryTypeToIcon[entry.type]} />
+              </Card.Header>
+            </Card.Content>
+            <Card.Content>
+              <i>{entry.description}</i>
+              {renderEntry(entry)}
+            </Card.Content>
+          </Card>
         );
       })}
-    </div>
+    </Card.Group>
   );
 };
 
@@ -88,12 +114,6 @@ const PatientPage = () => {
   if (!patientToShow) {
     return null;
   }
-
-  const genderToIcon: { [id: string]: SemanticICONS | undefined } = {
-    male: "mars",
-    female: "venus",
-    other: "neuter"
-  };
 
   return (
     <div>
