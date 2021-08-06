@@ -1,4 +1,4 @@
-import { NewPatient, Gender } from "./types";
+import { Patient, NewPatient, Gender, Entry } from "./types";
 
 const isString = (text: unknown): text is string => {
   return typeof text === 'string' || text instanceof String;
@@ -44,12 +44,12 @@ type PatientFields = {
   ssn: unknown,
   gender: unknown,
   occupation: unknown,
-  entries?: unknown
+  entries: unknown
 };
 
-type NewPatientFields = Omit<PatientFields, 'id'>;
+type NewPatientFields = Omit<PatientFields, 'id' | 'entries'>;
 
-export const toNewPatient = ({name, dateOfBirth, ssn, gender, occupation}: NewPatientFields): NewPatient => {
+export const toNewPatient = ({ name, dateOfBirth, ssn, gender, occupation }: NewPatientFields): NewPatient => {
   const patient = {
     name: parseStringField('name', name),
     dateOfBirth: parseDate('dateOfBirth', dateOfBirth),
@@ -57,6 +57,41 @@ export const toNewPatient = ({name, dateOfBirth, ssn, gender, occupation}: NewPa
     gender: parseGender('gender', gender),
     occupation: parseStringField('occupation', occupation),
     entries: []
+  };
+
+  return patient;
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const isEntry = (entry: any): entry is Entry => {
+  return typeof (entry) === 'object'
+    && Object.keys(entry).includes('type')
+    && ['Hospital', 'OccupationalHealthcare', 'HealthCheck'].includes(entry['type']);
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const isEntries = (param: any): param is Entry[] => {
+  return Array.isArray(param)
+    && param.every((entry) => isEntry(entry));
+};
+
+const parseEntries = (fieldName: string, fieldValue: unknown): Entry[] => {
+  if (!fieldValue || !isEntries(fieldValue)) {
+    throw new Error(`Incorrect or missing value for field ${fieldName}: ${fieldValue}`);
+  }
+
+  return fieldValue;
+};
+
+export const toPatient = ({ id, name, dateOfBirth, ssn, gender, occupation, entries }: PatientFields): Patient => {
+  const patient = {
+    id: parseStringField('id', id),
+    name: parseStringField('name', name),
+    dateOfBirth: parseDate('dateOfBirth', dateOfBirth),
+    ssn: parseStringField('ssn', ssn),
+    gender: parseGender('gender', gender),
+    occupation: parseStringField('occupation', occupation),
+    entries: parseEntries('entries', entries)
   };
 
   return patient;
