@@ -7,6 +7,7 @@ import { SemanticICONS } from "semantic-ui-react/dist/commonjs/generic";
 import { apiBaseUrl } from "../constants";
 import { useStateValue } from "../state";
 import { Patient } from "../types";
+import { addPatient } from "../state/reducer";
 
 const PatientPage = () => {
   const [state, dispatch] = useStateValue();
@@ -16,7 +17,7 @@ const PatientPage = () => {
     const getPatient = async (id: string) => {
       try {
         const { data: patient } = await axios.get<Patient>(`${apiBaseUrl}/patients/${id}`);
-        dispatch({ type: "ADD_PATIENT", payload: patient });
+        dispatch(addPatient(patient));
       } catch (e) {
         console.log(e);
       }
