@@ -5,14 +5,15 @@ import { Button, Divider, Header, Container } from "semantic-ui-react";
 
 import { apiBaseUrl } from "./constants";
 import { useStateValue } from "./state";
-import { Patient } from "./types";
-import { setPatientList } from "./state/reducer";
+import { Diagnosis, Patient } from "./types";
+import { setDiagnosisList, setPatientList } from "./state/reducer";
 
 import PatientListPage from "./PatientListPage";
 import PatientPage from "./components/PatientPage";
 
 const App = () => {
   const [, dispatch] = useStateValue();
+
   React.useEffect(() => {
     const testBackendConnection = async () => {
       try {
@@ -23,17 +24,22 @@ const App = () => {
     };
     void testBackendConnection();
 
-    const fetchPatientList = async () => {
+    const fetchState = async () => {
       try {
         const { data: patientListFromApi } = await axios.get<Patient[]>(
           `${apiBaseUrl}/patients`
         );
         dispatch(setPatientList(patientListFromApi));
+
+        const {data: diagnosisListFromApi} = await axios.get<Diagnosis[]>(
+          `${apiBaseUrl}/diagnoses`
+        );
+        dispatch(setDiagnosisList(diagnosisListFromApi));
       } catch (e) {
         console.error(e);
       }
     };
-    void fetchPatientList();
+    void fetchState();
   }, [dispatch]);
 
   return (

@@ -9,13 +9,14 @@ const getPatients = (): Patient[] => {
 };
 
 const makeNonSensitive = (patient: Patient): NonSensitivePatient => {
-  const { id, name, dateOfBirth, gender, occupation } = patient;
+  const { id, name, dateOfBirth, gender, occupation, entries } = patient;
   return {
     id,
     name,
     dateOfBirth,
     gender,
-    occupation
+    occupation,
+    entries
   };
 };
 

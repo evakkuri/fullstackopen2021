@@ -41,6 +41,8 @@ const PatientListPage = () => {
     return patient ? true : false;
   };
 
+  //console.log(patients);
+
   return (
     <div className="App">
       <Container textAlign="center">
