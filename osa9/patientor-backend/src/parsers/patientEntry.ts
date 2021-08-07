@@ -75,7 +75,7 @@ const isSickLeave = (entry: any): entry is SickLeave => {
   return typeof (entry) === 'object'
     && Object.keys(entry).includes('startDate')
     && isDate(entry.startDate)
-    && Object.keys(entry).includes('endData')
+    && Object.keys(entry).includes('endDate')
     && isDate(entry.endDate);
 };
 

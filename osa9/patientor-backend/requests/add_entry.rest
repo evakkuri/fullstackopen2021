@@ -38,15 +38,18 @@ content-type: application/json
 {
   "id": "d911e46d-70b3-4d90-b090-4535c7cf8fb1",
   "date": "2021-01-01",
-  "type": "Hospital",
+  "type": "OccupationalHealthcare",
   "specialist": "Test Specialist",
   "description": "Test description",
   "diagnosisCodes": ["S62.5"],
-  "discharge": {
-    "date": "2021-01-05",
-    "criteria": "Patient has healed"
+  "employerName": "Test Org",
+  "sickLeave": {
+    "startDate": "2021-01-01",
+    "endDate": "2021-01-08"
   }
 }
+
+###
 
 export interface DischargeNote {
   date: string;

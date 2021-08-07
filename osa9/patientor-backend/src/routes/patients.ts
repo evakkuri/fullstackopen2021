@@ -32,17 +32,22 @@ router.post('/', (req, res) => {
 router.post('/:id/entries', (req, res) => {
   //console.log(req.body);
 
-  const newEntry: EntryWithoutId = toNewEntry(req.body);
+  try {
+    const newEntry: EntryWithoutId = toNewEntry(req.body);
 
-  const updatedPatient = patientService.addEntry(
-    req.params.id,
-    newEntry
-  );
+    const updatedPatient = patientService.addEntry(
+      req.params.id,
+      newEntry
+    );
 
-  if (!updatedPatient)
-    res.status(404).send(`Patient with ID ${req.params.id} not found.`);
+    if (!updatedPatient)
+      res.status(404).send(`Patient with ID ${req.params.id} not found.`);
 
-  res.json(updatedPatient);
+    res.json(updatedPatient);
+
+  } catch (e) {
+    res.status(400).send(`Error: ${e}`);
+  }
 });
 
 export default router;
