@@ -48,22 +48,3 @@ content-type: application/json
     "endDate": "2021-01-08"
   }
 }
-
-###
-
-export interface DischargeNote {
-  date: string;
-  criteria: string;
-}
-
-interface HospitalEntry extends BaseEntry {
-  type: "Hospital";
-  discharge: DischargeNote;
-}
-
-
-id: string;
-  description: string;
-  date: string;
-  specialist: string;
-  diagnosisCodes?: Array<Diagnosis['code']>;
