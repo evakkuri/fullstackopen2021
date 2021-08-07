@@ -1,8 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
 import patientData from '../../data/patientsExpanded';
-import { Patient, NonSensitivePatient, NewPatient } from '../types';
+import { Patient, NonSensitivePatient, NewPatient, EntryWithoutId } from '../types';
 
-const patients: Patient[] = patientData;
+let patients: Patient[] = patientData;
 
 const getPatients = (): Patient[] => {
   return patients;
@@ -43,9 +43,25 @@ const addPatient = (patient: NewPatient): Patient => {
   return newPatient;
 };
 
+const addEntry = (patientId: string, newEntry: EntryWithoutId): Patient | undefined => {
+  const currPatient = patients.find((p) => p.id === patientId);
+
+  if (!currPatient) return undefined;
+
+  const patientWithNewEntry: Patient = {
+    ...currPatient,
+    entries: currPatient.entries.concat({...newEntry, id: uuidv4()})
+  };
+
+  patients = patientData.map(
+    (p) => p.id === patientId ? patientWithNewEntry : p);
+  return patientWithNewEntry;
+};
+
 export default {
   getPatients,
   getNonSensitivePatients,
   findById,
-  addPatient
+  addPatient,
+  addEntry
 };

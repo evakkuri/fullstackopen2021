@@ -2,7 +2,9 @@
 
 import express from 'express';
 import patientService from '../services/patientService';
-import { toNewPatient } from '../utils';
+import { toNewPatient } from '../parsers/patient';
+import { toNewEntry } from '../parsers/patientEntry';
+import { EntryWithoutId } from '../types';
 
 const router = express.Router();
 
@@ -25,6 +27,22 @@ router.post('/', (req, res) => {
   } catch (e) {
     res.status(400).send(e.message);
   }
+});
+
+router.post('/:id/entries', (req, res) => {
+  //console.log(req.body);
+
+  const newEntry: EntryWithoutId = toNewEntry(req.body);
+
+  const updatedPatient = patientService.addEntry(
+    req.params.id,
+    newEntry
+  );
+
+  if (!updatedPatient)
+    res.status(404).send(`Patient with ID ${req.params.id} not found.`);
+
+  res.json(updatedPatient);
 });
 
 export default router;

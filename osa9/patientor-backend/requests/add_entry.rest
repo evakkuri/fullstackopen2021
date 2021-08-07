@@ -1,0 +1,66 @@
+### Success: Add 'Hospital' entry to John McClane
+POST http://localhost:3001/api/patients/d2773336-f723-11e9-8f0b-362b9e155667/entries
+content-type: application/json
+
+{
+  "id": "d911e46d-70b3-4d90-b090-4535c7cf8fb1",
+  "date": "2021-01-01",
+  "type": "Hospital",
+  "specialist": "Test Specialist",
+  "description": "Test description",
+  "diagnosisCodes": ["S62.5"],
+  "discharge": {
+    "date": "2021-01-05",
+    "criteria": "Patient has healed"
+  }
+}
+
+### Fail: Add 'Hospital' entry to John McClane
+POST http://localhost:3001/api/patients/d2773336-f723-11e9-8f0b-362b9e155667/entries
+content-type: application/json
+
+{
+  "id": "d911e46d-70b3-4d90-b090-4535c7cf8fb1",
+  "date": "2021-01-01",
+  "type": "Hospital",
+  "specialist": "Test Specialist",
+  "description": "Test description",
+  "discharge": {
+    "date": "test",
+    "criteria": "Patient has healed"
+  }
+}
+
+### Success: Add 'OccupationalHealthcare' entry to John McClane
+POST http://localhost:3001/api/patients/d2773336-f723-11e9-8f0b-362b9e155667/entries
+content-type: application/json
+
+{
+  "id": "d911e46d-70b3-4d90-b090-4535c7cf8fb1",
+  "date": "2021-01-01",
+  "type": "Hospital",
+  "specialist": "Test Specialist",
+  "description": "Test description",
+  "diagnosisCodes": ["S62.5"],
+  "discharge": {
+    "date": "2021-01-05",
+    "criteria": "Patient has healed"
+  }
+}
+
+export interface DischargeNote {
+  date: string;
+  criteria: string;
+}
+
+interface HospitalEntry extends BaseEntry {
+  type: "Hospital";
+  discharge: DischargeNote;
+}
+
+
+id: string;
+  description: string;
+  date: string;
+  specialist: string;
+  diagnosisCodes?: Array<Diagnosis['code']>;
