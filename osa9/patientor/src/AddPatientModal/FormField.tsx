@@ -38,15 +38,11 @@ interface TextProps extends FieldProps {
   placeholder: string;
 }
 
-export const TextField= ({
-  field,
-  label,
-  placeholder
-}: TextProps) => (
+export const TextField = ({ field, label, placeholder }: TextProps) => (
   <Form.Field>
     <label>{label}</label>
     <Field placeholder={placeholder} {...field} />
-    <div style={{ color:'red' }}>
+    <div style={{ color: 'red' }}>
       <ErrorMessage name={field.name} />
     </div>
   </Form.Field>
@@ -62,12 +58,12 @@ interface NumberProps extends FieldProps {
   max: number;
 }
 
-export const NumberField = ({ field, label, min, max } : NumberProps ) => (
+export const NumberField = ({ field, label, min, max }: NumberProps) => (
   <Form.Field>
     <label>{label}</label>
     <Field {...field} type='number' min={min} max={max} />
 
-    <div style={{ color:'red' }}>
+    <div style={{ color: 'red' }}>
       <ErrorMessage name={field.name} />
     </div>
   </Form.Field>
