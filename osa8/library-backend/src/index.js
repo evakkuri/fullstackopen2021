@@ -1,4 +1,5 @@
 const { ApolloServer, gql } = require('apollo-server')
+const { v1: uuid } = require('uuid')
 
 let authors = [
   {
@@ -16,11 +17,11 @@ let authors = [
     id: "afa5b6f1-344d-11e9-a414-719c6709cf3e",
     born: 1821
   },
-  { 
+  {
     name: 'Joshua Kerievsky', // birthyear not known
     id: "afa5b6f2-344d-11e9-a414-719c6709cf3e",
   },
-  { 
+  {
     name: 'Sandi Metz', // birthyear not known
     id: "afa5b6f3-344d-11e9-a414-719c6709cf3e",
   },
@@ -66,7 +67,7 @@ let books = [
     author: 'Joshua Kerievsky',
     id: "afa5de01-344d-11e9-a414-719c6709cf3e",
     genres: ['refactoring', 'patterns']
-  },  
+  },
   {
     title: 'Practical Object-Oriented Design, An Agile Primer Using Ruby',
     published: 2012,
@@ -112,6 +113,15 @@ const typeDefs = gql`
     allBooks(author: String, genre: String): [Book!]!
     allAuthors: [Author!]!
   }
+
+  type Mutation {
+    addBook(
+      title: String!
+      author: String!
+      published: Int!
+      genres: [String!]!
+    ): Book
+  }
 `
 
 const resolvers = {
@@ -119,22 +129,38 @@ const resolvers = {
     bookCount: () => books.length,
     authorCount: () => authors.length,
     allBooks: (parent, args) => {
-      let filteredBooks = books
-
-      if (args.author) {
-        filteredBooks = filteredBooks.filter((b) => b.author === args.author)
-      }
-
-      if (args.genre) {
-        filteredBooks = filteredBooks.filter((b) => b.genres.includes(args.genre))
-      }
-
-      return filteredBooks
+      return books
+        .filter((book) => args.author ? book.author === args.author : true)
+        .filter((book) => args.genre ? book.genres.includes(args.genre) : true)
     },
     allAuthors: () => authors
   },
   Author: {
     bookCount: (root) => books.filter((b) => b.author === root.name).length
+  },
+  Mutation: {
+    addBook: (parent, args) => {
+      // Check that book with same title does not exist yet
+      if (books.find((book) => book.title === args.title)) {
+        throw new UserInputError('Book title must be unique', {
+          invalidArgs: args.name,
+        })
+      }
+
+      // If author is not yet known, add new author entry
+      if (!authors.find((a) => a.name === args.author)) {
+        const newAuthor = {
+          id: uuid(),
+          name: args.author
+        }
+        authors = authors.concat(newAuthor)
+      }
+
+      // Add new book
+      const newBook = {...args, id: uuid()}
+      books = books.concat(newBook)
+      return newBook
+    }
   }
 }
 
