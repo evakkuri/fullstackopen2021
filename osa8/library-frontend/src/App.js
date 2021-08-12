@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Container, Menu } from 'semantic-ui-react'
+import { Button, Container, Menu } from 'semantic-ui-react'
 
 import Authors from './components/Authors'
 import Books from './components/Books'
@@ -8,10 +8,16 @@ import NewBook from './components/NewBook'
 const App = () => {
   const [page, setPage] = useState('authors')
 
+  const menuStyle = {
+    padding: '10px',
+    backgroundColor: 'black'
+  }
+
   return (
     <div className="App">
-      <Container>
-        <Menu secondary>
+
+      <Menu inverted secondary style={menuStyle}>
+        <Container>
           <Menu.Item
             name='Authors'
             active={page === 'authors'}
@@ -23,25 +29,19 @@ const App = () => {
             onClick={() => setPage('books')}
           />
           <Menu.Menu position='right'>
-            <Menu.Item
-              name='Add book'
-              active={page === 'add'}
+            <Button inverted
               onClick={() => setPage('add')}
-            />
+            >Add book</Button>
           </Menu.Menu>
-        </Menu>
+        </Container>
+      </Menu>
 
-        <Authors
-          show={page === 'authors'}
-        />
-
-        <Books
-          show={page === 'books'}
-        />
-
-        <NewBook
-          show={page === 'add'}
-        />
+      <Container>
+        <div style={{ marginTop: '30px' }}>
+          <Authors show={page === 'authors'} />
+          <Books show={page === 'books'} />
+          <NewBook show={page === 'add'}/>
+        </div>
       </Container>
     </div>
   )

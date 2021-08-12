@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { Form } from 'semantic-ui-react'
 
 const NewBook = (props) => {
   const [title, setTitle] = useState('')
@@ -13,7 +14,7 @@ const NewBook = (props) => {
 
   const submit = async (event) => {
     event.preventDefault()
-    
+
     console.log('add book...')
 
     setTitle('')
@@ -30,41 +31,38 @@ const NewBook = (props) => {
 
   return (
     <div>
-      <form onSubmit={submit}>
-        <div>
-          title
-          <input
-            value={title}
-            onChange={({ target }) => setTitle(target.value)}
-          />
-        </div>
-        <div>
-          author
-          <input
-            value={author}
-            onChange={({ target }) => setAuthor(target.value)}
-          />
-        </div>
-        <div>
-          published
-          <input
-            type='number'
-            value={published}
-            onChange={({ target }) => setPublished(target.value)}
-          />
-        </div>
-        <div>
-          <input
-            value={genre}
-            onChange={({ target }) => setGenre(target.value)}
-          />
-          <button onClick={addGenre} type="button">add genre</button>
-        </div>
-        <div>
-          genres: {genres.join(' ')}
-        </div>
-        <button type='submit'>create book</button>
-      </form>
+      <Form onSubmit={submit}>
+        <Form.Input
+          label='Book title'
+          placeholder='Title'
+          value={title}
+          onChange={({ target }) => setTitle(target.value)}
+        />
+        <Form.Input
+          label='Author'
+          placeholder='Author'
+          value={author}
+          onChange={({ target }) => setAuthor(target.value)}
+        />
+        <Form.Input
+          type='number'
+          label='Published'
+          placeholder='2021'
+          value={published}
+          onChange={({ target }) => setPublished(target.value)}
+        />
+        <Form.TextArea
+          label='Genres'
+          placeholder='Input book genres separated by space, e.g. "suspense action", then click "Add genre"'
+          value={genre}
+          onChange={({ target }) => setGenre(target.value)}
+        />
+        <Form.Button onClick={addGenre} type="button">Add genre</Form.Button>
+        <p>
+          <i>Genres:</i> {genres.join(' ')}
+        </p>
+        <Form.Button primary type='submit'>Create book</Form.Button>
+      </Form>
     </div>
   )
 }
