@@ -1,16 +1,8 @@
 import React from 'react'
-import { gql, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import { Table } from 'semantic-ui-react'
 
-const ALL_BOOKS = gql`
-  query {
-    allBooks  {
-      title
-      author
-      published
-    }
-  }
-`
+import { ALL_BOOKS } from '../queries'
 
 const Books = (props) => {
   const books = useQuery(ALL_BOOKS)

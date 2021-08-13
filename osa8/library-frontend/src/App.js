@@ -7,6 +7,7 @@ import NewBook from './components/NewBook'
 
 const App = () => {
   const [page, setPage] = useState('authors')
+  //const [errorMessage, setErrorMessage] = useState(null)
 
   const menuStyle = {
     padding: '10px',

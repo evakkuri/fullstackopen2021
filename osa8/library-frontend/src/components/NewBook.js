@@ -1,5 +1,29 @@
 import React, { useState } from 'react'
+import { gql, useMutation } from '@apollo/client'
 import { Form } from 'semantic-ui-react'
+
+import { ALL_BOOKS } from '../queries'
+
+const CREATE_BOOK = gql`
+  mutation createBook(
+    $title: String!, 
+    $author: String!, 
+    $published: Int!,
+    $genres: [String!]!
+  ) {
+    addBook(
+      title: $title,
+      author: $author,
+      published: $published,
+      genres: $genres
+    ) {
+      title
+      author
+      published
+      genres
+    }
+  }
+`
 
 const NewBook = (props) => {
   const [title, setTitle] = useState('')
@@ -8,6 +32,13 @@ const NewBook = (props) => {
   const [genre, setGenre] = useState('')
   const [genres, setGenres] = useState([])
 
+  const [createBook] = useMutation(CREATE_BOOK, {
+    refetchQueries: [{ query: ALL_BOOKS }],
+    onError: (error) => {
+      console.log(error.graphQLErrors[0].message)
+    }
+  })
+
   if (!props.show) {
     return null
   }
@@ -15,7 +46,14 @@ const NewBook = (props) => {
   const submit = async (event) => {
     event.preventDefault()
 
-    console.log('add book...')
+    createBook({
+      variables: {
+        title,
+        author,
+        published: Number(published),
+        genres
+      }
+    })
 
     setTitle('')
     setPublished('')
