@@ -1,4 +1,4 @@
-const { ApolloServer, gql } = require('apollo-server')
+const { ApolloServer, UserInputError, gql } = require('apollo-server')
 const { v1: uuid } = require('uuid')
 
 let authors = [
@@ -121,7 +121,7 @@ const typeDefs = gql`
       published: Int!
       genres: [String!]!
     ): Book
-    editAuthor(
+    editAuthorBirthYear(
       name: String!
       setBornTo: Int!
     ): Author
@@ -165,7 +165,7 @@ const resolvers = {
       books = books.concat(newBook)
       return newBook
     },
-    editAuthor: (parent, args) => {
+    editAuthorBirthYear: (parent, args) => {
       const authorToEdit = authors.find((a) => a.name === args.name)
       if (!authorToEdit) return null
 

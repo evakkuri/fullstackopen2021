@@ -1,41 +1,37 @@
 import React, { useState } from 'react'
-import { gql, useMutation } from '@apollo/client'
+import { useMutation } from '@apollo/client'
 import { Form } from 'semantic-ui-react'
 
-import { ALL_BOOKS } from '../queries'
-
-const CREATE_BOOK = gql`
-  mutation createBook(
-    $title: String!, 
-    $author: String!, 
-    $published: Int!,
-    $genres: [String!]!
-  ) {
-    addBook(
-      title: $title,
-      author: $author,
-      published: $published,
-      genres: $genres
-    ) {
-      title
-      author
-      published
-      genres
-    }
-  }
-`
+import { ALL_BOOKS, ALL_AUTHORS, CREATE_BOOK } from '../queries'
 
 const NewBook = (props) => {
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [published, setPublished] = useState('')
-  const [genre, setGenre] = useState('')
+  const [title, setTitle] = useState(null)
+  const [author, setAuthor] = useState(null)
+  const [published, setPublished] = useState(null)
+  const [genre, setGenre] = useState(null)
   const [genres, setGenres] = useState([])
 
   const [createBook] = useMutation(CREATE_BOOK, {
-    refetchQueries: [{ query: ALL_BOOKS }],
+    refetchQueries: [{ query: ALL_BOOKS }, { query: ALL_AUTHORS}],
     onError: (error) => {
-      console.log(error.graphQLErrors[0].message)
+      if (error.networkError && error.networkError.result.errors) {
+        props.notifyError(
+          <div>
+            <p>Errors in input values:</p>
+            <ul>
+              {error.networkError.result.errors.map(
+                (e, i) => <li key={i}>{e.message}</li>)
+              }
+            </ul>
+          </div>
+        )
+      }
+
+      if (error.graphQLErrors && error.graphQLErrors.length > 0) {
+        props.notifyError(
+          `Error creating new book entry: ${JSON.stringify(error.graphQLErrors[0].message)}`
+        )
+      }
     }
   })
 
@@ -46,20 +42,33 @@ const NewBook = (props) => {
   const submit = async (event) => {
     event.preventDefault()
 
-    createBook({
-      variables: {
-        title,
-        author,
-        published: Number(published),
-        genres
-      }
-    })
+    try {
+      const newBook = await createBook({
+        variables: {
+          title: title ? title : null,
+          author: author ? author : null,
+          published: Number(published) ? Number(published) : null,
+          genres: genres.length > 0 ? genres : null
+        }
+      })
 
-    setTitle('')
-    setPublished('')
-    setAuthor('')
-    setGenres([])
-    setGenre('')
+      if (newBook.data) {
+        const title = newBook.data.addBook.title
+        const author = newBook.data.addBook.author
+        props.notifySuccess(
+          `Successfully created new book "${title}" by ${author}`)
+
+        setTitle('')
+        setPublished('')
+        setAuthor('')
+        setGenres([])
+        setGenre('')
+      }
+
+    } catch (e) {
+      console.log("Submit error handler")
+      console.log(e)
+    }
   }
 
   const addGenre = () => {
@@ -69,30 +78,31 @@ const NewBook = (props) => {
 
   return (
     <div>
+
       <Form onSubmit={submit}>
         <Form.Input
           label='Book title'
           placeholder='Title'
-          value={title}
+          value={title || ''}
           onChange={({ target }) => setTitle(target.value)}
         />
         <Form.Input
           label='Author'
           placeholder='Author'
-          value={author}
+          value={author || ''}
           onChange={({ target }) => setAuthor(target.value)}
         />
         <Form.Input
           type='number'
           label='Published'
           placeholder='2021'
-          value={published}
+          value={published || ''}
           onChange={({ target }) => setPublished(target.value)}
         />
         <Form.TextArea
           label='Genres'
           placeholder='Input book genres separated by space, e.g. "suspense action", then click "Add genre"'
-          value={genre}
+          value={genre || ''}
           onChange={({ target }) => setGenre(target.value)}
         />
         <Form.Button onClick={addGenre} type="button">Add genre</Form.Button>
