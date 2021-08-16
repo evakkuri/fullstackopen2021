@@ -10,6 +10,8 @@ const Authors = (props) => {
 
   const authors = useQuery(ALL_AUTHORS)
 
+  console.log(authors)
+
   const [updateBirthYear] = useMutation(UPDATE_BIRTH_YEAR, {
     refetchQueries: [{ query: ALL_AUTHORS }],
     onError: (error) => {
