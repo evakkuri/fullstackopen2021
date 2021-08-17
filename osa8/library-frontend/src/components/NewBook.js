@@ -12,7 +12,7 @@ const NewBook = (props) => {
   const [genres, setGenres] = useState([])
 
   const [createBook] = useMutation(CREATE_BOOK, {
-    refetchQueries: [{ query: ALL_BOOKS }, { query: ALL_AUTHORS}],
+    refetchQueries: [{ query: ALL_BOOKS }, { query: ALL_AUTHORS }],
     onError: (error) => {
       if (error.networkError && error.networkError.result.errors) {
         props.notifyError(
@@ -42,21 +42,23 @@ const NewBook = (props) => {
   const submit = async (event) => {
     event.preventDefault()
 
+    const newBookVars = {
+      title: title ? title : null,
+      author: author ? author : null,
+      published: Number(published) ? Number(published) : null,
+      genres: genres.length > 0 ? genres : null
+    }
+
     try {
       const newBook = await createBook({
-        variables: {
-          title: title ? title : null,
-          author: author ? author : null,
-          published: Number(published) ? Number(published) : null,
-          genres: genres.length > 0 ? genres : null
-        }
+        variables: newBookVars
       })
 
       if (newBook.data) {
         const title = newBook.data.addBook.title
         const author = newBook.data.addBook.author
         props.notifySuccess(
-          `Successfully created new book "${title}" by ${author}`)
+          `Successfully created new book "${title}" by ${author.name}`)
 
         setTitle('')
         setPublished('')

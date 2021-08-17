@@ -40,9 +40,9 @@ const typeDefs = gql`
   type Query {
     bookCount: Int!
     authorCount: Int!
-    allBooks: [Book!]!
-    allBooksParametrized(author: String, genre: String): [Book!]!
+    allBooks(author: String, genre: String): [Book]!
     allAuthors: [Author!]!
+    findAuthorByName: Author
   }
 
   type Mutation {
@@ -63,48 +63,79 @@ const resolvers = {
   Query: {
     bookCount: () => Book.collection.countDocuments(),
     authorCount: () => Author.collection.countDocuments(),
-    allBooks: () => Book.find({}).populate('author'),
-    allBooksParametrized: (parent, args) => {
+    allBooks: async (parent, args) => {
+      const books = await Book.find({}).populate('author')
       return books
-        .filter((book) => args.author ? book.author === args.author : true)
+        .filter((book) => args.author ? book.author.name === args.author : true)
         .filter((book) => args.genre ? book.genres.includes(args.genre) : true)
     },
-    allAuthors: () => Author.find({})
+    allAuthors: () => Author.find({}),
+    findAuthorByName: (_parent, args) => Author.findOne({ name: args.name })
   },
   Author: {
-    bookCount: (root) => books.filter((b) => b.author === root.name).length
+    bookCount: async (root) => {
+      const authorBooks = await Book.find({author: root})
+      return authorBooks.length
+    }
   },
   Mutation: {
-    addBook: (parent, args) => {
-      // Check that book with same title does not exist yet
-      if (books.find((book) => book.title === args.title)) {
-        throw new UserInputError('Book title must be unique', {
-          invalidArgs: args.name,
+    addBook: async (_parent, args) => {
+      console.log(`Adding new book: ${JSON.stringify(args)}`)
+
+      //Create new book entry
+      const newBookNoAuthor = { ...args }
+
+      // If author is not yet known, add new author entry
+      console.log("Searching author...")
+      let author = await Author.findOne({
+        name: args.author
+      })
+
+      if (!author) {
+        author = new Author({
+          name: args.author
+        })
+
+        try {
+          await author.save()
+        } catch (error) {
+          throw new UserInputError(error.message, {
+            invalidArgs: args,
+          })
+        }
+        
+        console.log(`Added new author: ${author}`)
+      }
+
+      const newBook = new Book({
+        ...newBookNoAuthor,
+        author: author
+      })
+
+      // Add new book
+      try {
+        await newBook.save()
+      } catch (error) {
+        throw new UserInputError(error.message, {
+          invalidArgs: args,
         })
       }
 
-      // If author is not yet known, add new author entry
-      if (!authors.find((a) => a.name === args.author)) {
-        const newAuthor = {
-          id: uuid(),
-          name: args.author
-        }
-        authors = authors.concat(newAuthor)
-      }
-
-      // Add new book
-      const newBook = { ...args, id: uuid() }
-      books = books.concat(newBook)
       return newBook
     },
-    editAuthorBirthYear: (parent, args) => {
-      const authorToEdit = authors.find((a) => a.name === args.name)
-      if (!authorToEdit) return null
+    editAuthorBirthYear: async (parent, args) => {
+      const authorToEdit = await Author.findOne({ name: args.name })
+      authorToEdit.born = args.setBornTo
 
-      const updatedAuthor = { ...authorToEdit, born: args.setBornTo }
-      authors = authors.map(
-        (a) => a.name === authorToEdit.name ? updatedAuthor : a)
-      return updatedAuthor
+      try {
+        await authorToEdit.save()
+      } catch (error) {
+        throw new UserInputError(error.message, {
+          invalidArgs: args,
+        })
+      }
+
+      return authorToEdit
     }
   }
 }
