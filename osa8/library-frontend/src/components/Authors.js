@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useQuery, useMutation } from '@apollo/client'
-import { Table, Form, Grid } from 'semantic-ui-react'
+import { Table, Form, Grid, Popup } from 'semantic-ui-react'
 
 import { ALL_AUTHORS, UPDATE_BIRTH_YEAR } from '../queries'
 
@@ -91,7 +91,18 @@ const Authors = (props) => {
                   value={authorBirthYearInput ? authorBirthYearInput : ''}
                   onChange={({ target }) => setAuthorBirthYearInput(target.value)}
                 />
-                <Form.Button primary type='submit'>Update</Form.Button>
+                <Popup
+                  content={'Allowed only when logged in.'}
+                  trigger={
+                    <Form.Button
+                      primary={props.loggedIn ? true : false}
+                      secondary={props.loggedIn ? true : false}
+                      type='submit'
+                      disabled={!props.loggedIn}
+                      content='Update'
+                    />
+                  }
+                />
               </Form>
             </Grid.Column>
           </Grid.Row>

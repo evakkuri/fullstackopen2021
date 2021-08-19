@@ -9,6 +9,7 @@ const App = () => {
   const [page, setPage] = useState('authors')
   const [errorMessage, setErrorMessage] = useState(null)
   const [successMessage, setSuccessMessage] = useState(null)
+  const [token, setToken] = useState(null)
 
   const menuStyle = {
     padding: '10px',
@@ -62,7 +63,7 @@ const App = () => {
           </Transition>
         </div>
         <div style={{ marginTop: '30px' }}>
-          <Authors show={page === 'authors'} />
+          <Authors show={page === 'authors'} loggedIn={token ? true : false}/>
           <Books show={page === 'books'} />
           <NewBook
             show={page === 'add'}
