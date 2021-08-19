@@ -1,4 +1,4 @@
-const { ApolloServer, UserInputError, gql } = require('apollo-server')
+const { ApolloServer, UserInputError, AuthenticationError, gql } = require('apollo-server')
 const { v1: uuid } = require('uuid')
 const mongoose = require('mongoose')
 const jwt = require('jsonwebtoken')
@@ -44,7 +44,7 @@ const typeDefs = gql`
 
   type User {
     username: String!
-    passwordHash: String!
+    favoriteGenre: String!
     id: ID!
   }
 
@@ -77,6 +77,7 @@ const typeDefs = gql`
     createUser(
       username: String!
       password: String!
+      favoriteGenre: String!
     ): User
 
     login(
@@ -97,7 +98,10 @@ const resolvers = {
         .filter((book) => args.genre ? book.genres.includes(args.genre) : true)
     },
     allAuthors: () => Author.find({}),
-    findAuthorByName: (_parent, args) => Author.findOne({ name: args.name })
+    findAuthorByName: (_parent, args) => Author.findOne({ name: args.name }),
+    me: (_root, _args, context) => {
+      return context.currentUser
+    }
   },
   Author: {
     bookCount: async (root) => {
@@ -106,8 +110,14 @@ const resolvers = {
     }
   },
   Mutation: {
-    addBook: async (_parent, args) => {
+    addBook: async (_parent, args, context) => {
       console.log(`Adding new book: ${JSON.stringify(args)}`)
+
+      // Check current authentication
+      const currentUser = context.currentUser
+      if (!currentUser) {
+        throw new AuthenticationError("User not authenticated.")
+      }
 
       //Create new book entry
       const newBookNoAuthor = { ...args }
@@ -150,7 +160,14 @@ const resolvers = {
 
       return newBook
     },
-    editAuthorBirthYear: async (parent, args) => {
+
+    editAuthorBirthYear: async (_parent, args, context) => {
+      // Check current authentication
+      const currentUser = context.currentUser
+      if (!currentUser) {
+        throw new AuthenticationError("User not authenticated.")
+      }
+
       const authorToEdit = await Author.findOne({ name: args.name })
       authorToEdit.born = args.setBornTo
 
@@ -172,7 +189,11 @@ const resolvers = {
 
       const saltRounds = 10
       const passwordHash = await bcrypt.hash(args.password, saltRounds)
-      const user = new User({ username: args.username, passwordHash })
+      const user = new User({ 
+        username: args.username, 
+        passwordHash,
+        favoriteGenre: args.favoriteGenre
+      })
 
       try {
         await user.save()
@@ -209,6 +230,21 @@ const resolvers = {
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  context: async ({ req }) => {
+    const auth = req ? req.headers.authorization : null
+
+    if (auth && auth.toLowerCase().startsWith('bearer ')) {
+      const decodedToken = jwt.verify(
+        auth.substring(7), jwtSecret
+      )
+
+      const currentUser = await User
+        .findById(decodedToken.id)
+        .populate('friends')
+
+      return { currentUser }
+    }
+  }
 })
 
 server.listen().then(({ url }) => {
