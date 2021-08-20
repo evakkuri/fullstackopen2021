@@ -4,6 +4,7 @@ import { Button, Container, Menu, Message, Transition } from 'semantic-ui-react'
 import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
+import Login from './components/LoginForm'
 
 const App = () => {
   const [page, setPage] = useState('authors')
@@ -46,9 +47,12 @@ const App = () => {
             onClick={() => setPage('books')}
           />
           <Menu.Menu position='right'>
-            <Button inverted
-              onClick={() => setPage('add')}
-            >Add book</Button>
+            <Button inverted onClick={() => setPage('add')}>
+              Add book
+            </Button>
+            <Button onClick={() => setPage('login')}>
+              Log in
+            </Button>
           </Menu.Menu>
         </Container>
       </Menu>
@@ -63,12 +67,18 @@ const App = () => {
           </Transition>
         </div>
         <div style={{ marginTop: '30px' }}>
-          <Authors show={page === 'authors'} loggedIn={token ? true : false}/>
+          <Authors show={page === 'authors'} loggedIn={token ? true : false} />
           <Books show={page === 'books'} />
           <NewBook
             show={page === 'add'}
             notifyError={notifyError}
             notifySuccess={notifySuccess}
+          />
+          <Login
+            show={page === 'login'}
+            setError={setErrorMessage}
+            token={token}
+            setToken={setToken}
           />
         </div>
       </Container>
