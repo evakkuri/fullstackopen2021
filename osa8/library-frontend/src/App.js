@@ -1,16 +1,52 @@
 import React, { useState } from 'react'
-import { Button, Container, Menu, Message, Transition } from 'semantic-ui-react'
+import { Button, Container, Menu, Message, Transition, Dropdown } from 'semantic-ui-react'
+import { useApolloClient } from '@apollo/client'
 
 import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
 import Login from './components/LoginForm'
 
+const LoginMenuItem = ({ token, setPage, setToken, apolloClient }) => {
+  if (!token) {
+    return (
+      <Button onClick={() => setPage('login')}>
+        Log in
+      </Button>
+    )
+  }
+
+  const logOutClick = () => {
+    localStorage.clear()
+    apolloClient.resetStore()
+    setToken(null)
+    setPage('login')
+  }
+
+  return (
+    <Dropdown
+      icon='user circle'
+      item
+    >
+      <Dropdown.Menu>
+        <Dropdown.Item onClick={() => setPage('login')}>
+          User information
+        </Dropdown.Item>
+        <Dropdown.Item onClick={logOutClick}>
+          Log out
+        </Dropdown.Item>
+      </Dropdown.Menu>
+    </Dropdown>
+  )
+}
+
 const App = () => {
   const [page, setPage] = useState('authors')
   const [errorMessage, setErrorMessage] = useState(null)
   const [successMessage, setSuccessMessage] = useState(null)
   const [token, setToken] = useState(null)
+
+  const client = useApolloClient()
 
   const menuStyle = {
     padding: '10px',
@@ -47,12 +83,18 @@ const App = () => {
             onClick={() => setPage('books')}
           />
           <Menu.Menu position='right'>
-            <Button inverted onClick={() => setPage('add')}>
+            <Button
+              inverted
+              disabled={token ? false : true}
+              onClick={() => setPage('add')}>
               Add book
             </Button>
-            <Button onClick={() => setPage('login')}>
-              Log in
-            </Button>
+            <LoginMenuItem
+              token={token}
+              setToken={setToken}
+              setPage={setPage}
+              apolloClient={client}
+            />
           </Menu.Menu>
         </Container>
       </Menu>
@@ -76,7 +118,6 @@ const App = () => {
           />
           <Login
             show={page === 'login'}
-            setError={setErrorMessage}
             token={token}
             setToken={setToken}
           />

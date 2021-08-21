@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react'
 import { useMutation } from '@apollo/client'
-import { Form, Grid, Container } from 'semantic-ui-react'
+import { Form, Grid, Container, Message } from 'semantic-ui-react'
 
 import { LOGIN } from '../queries'
 
-const LoginForm = ({ show, setError, token, setToken }) => {
+const LoginForm = ({ show, token, setToken }) => {
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [errorMessage, setErrorMessage] = useState(null)
 
   const [login, result] = useMutation(LOGIN, {
     onError: (error) => {
-      setError(error.graphQLErrors[0].message)
+      setErrorMessage(error.graphQLErrors[0].message)
     }
   })
 
@@ -27,15 +28,21 @@ const LoginForm = ({ show, setError, token, setToken }) => {
 
   if (token) return (
     <Container>
-      <h3>User logged in</h3>
-      <p>Token: {token.slice(0, 10)}...</p>
+      <h2>User information</h2>
+      <p><b>Username:</b> { }</p>
     </Container>
   )
 
   const submit = async (event) => {
     event.preventDefault()
 
-    login({ variables: { username, password } })
+    const loginResult = await login({ variables: { username, password } })
+
+    if (loginResult.data) {
+      setErrorMessage(null)
+      setUsername('')
+      setPassword('')
+    }   
   }
 
   return (
@@ -43,7 +50,7 @@ const LoginForm = ({ show, setError, token, setToken }) => {
       <Grid columns={2}>
         <Grid.Row>
           <Grid.Column>
-            <Form onSubmit={submit}>
+            <Form error onSubmit={submit}>
               <Form.Input
                 label={'Username'}
                 placeholder={'Username'}
@@ -51,10 +58,17 @@ const LoginForm = ({ show, setError, token, setToken }) => {
                 onChange={({ target }) => setUsername(target.value)}
               />
               <Form.Input
+                type='password'
                 label={'Password'}
                 placeholder={'Password'}
                 value={password || ''}
                 onChange={({ target }) => setPassword(target.value)}
+              />
+              <Message
+                hidden={!errorMessage ? true : false}
+                error
+                header={'Error'}
+                content={errorMessage}
               />
               <Form.Button primary type='submit'>Login</Form.Button>
             </Form>
