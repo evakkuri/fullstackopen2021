@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useMutation } from '@apollo/client'
-import { Form } from 'semantic-ui-react'
+import { Form, Label, Icon } from 'semantic-ui-react'
 
 import { ALL_BOOKS, ALL_AUTHORS, CREATE_BOOK } from '../queries'
 
@@ -74,13 +74,17 @@ const NewBook = (props) => {
   }
 
   const addGenre = () => {
-    setGenres(genres.concat(genre))
+    const genresToAdd = genre
+      .split(',')
+      .map(genreToAdd => genreToAdd.trim())
+      .filter(genreToAdd => !genres.includes(genreToAdd))
+
+    setGenres(genres.concat(genresToAdd))
     setGenre('')
   }
 
   return (
     <div>
-
       <Form onSubmit={submit}>
         <Form.Input
           label='Book title'
@@ -103,15 +107,30 @@ const NewBook = (props) => {
         />
         <Form.TextArea
           label='Genres'
-          placeholder='Input book genres separated by space, e.g. "suspense action", then click "Add genre"'
+          placeholder='Input book genres separated by comma, e.g. "suspense, action", then click "Add genre"'
           value={genre || ''}
           onChange={({ target }) => setGenre(target.value)}
         />
         <Form.Button onClick={addGenre} type="button">Add genre</Form.Button>
-        <p>
-          <i>Genres:</i> {genres.join(' ')}
-        </p>
-        <Form.Button primary type='submit'>Create book</Form.Button>
+        <div>
+          <p>
+            <i>Genres: </i>
+            <span>
+              {genres.map((genre) => {
+                return (
+                  <Label key={genre}>
+                    {genre}
+                    <Icon
+                      name='delete'
+                      onClick={() => setGenres(genres
+                        .filter(setGenre => setGenre !== genre))} />
+                  </Label>
+                )
+              })}
+            </span>
+          </p>
+        </div>
+        <Form.Button primary type='submit' style={{ marginTop: 15 }}>Create book</Form.Button>
       </Form>
     </div>
   )

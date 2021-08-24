@@ -25,7 +25,7 @@ const LoginMenuItem = ({ token, setPage, setToken, apolloClient }) => {
 
   return (
     <Dropdown
-      icon='user circle'
+      icon={{name: 'user circle', fitted: true}}
       item
     >
       <Dropdown.Menu>
