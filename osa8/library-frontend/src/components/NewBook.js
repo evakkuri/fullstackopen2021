@@ -113,22 +113,18 @@ const NewBook = (props) => {
         />
         <Form.Button onClick={addGenre} type="button">Add genre</Form.Button>
         <div>
-          <p>
-            <i>Genres: </i>
-            <span>
-              {genres.map((genre) => {
-                return (
-                  <Label key={genre}>
-                    {genre}
-                    <Icon
-                      name='delete'
-                      onClick={() => setGenres(genres
-                        .filter(setGenre => setGenre !== genre))} />
-                  </Label>
-                )
-              })}
-            </span>
-          </p>
+          <i>Genres: </i>
+          {genres.map((genre) => {
+            return (
+              <Label key={genre}>
+                {genre}
+                <Icon
+                  name='delete'
+                  onClick={() => setGenres(genres
+                    .filter(setGenre => setGenre !== genre))} />
+              </Label>
+            )
+          })}
         </div>
         <Form.Button primary type='submit' style={{ marginTop: 15 }}>Create book</Form.Button>
       </Form>

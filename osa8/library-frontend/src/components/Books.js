@@ -1,19 +1,30 @@
-import React, { useState } from 'react'
-import { useQuery } from '@apollo/client'
+import React, { useState, useEffect } from 'react'
+import { useQuery, useLazyQuery } from '@apollo/client'
 import { Table, Label, Menu, Button, Icon } from 'semantic-ui-react'
 
-import { ALL_BOOKS } from '../queries'
+import { ALL_GENRES, ALL_BOOKS } from '../queries'
 
 const Books = (props) => {
   const [selectedGenres, setSelectedGenres] = useState([])
+  const [books, setBooks] = useState([])
 
-  const books = useQuery(ALL_BOOKS)
-  const genres = books.data
-    ? [...new Set(
-      books.data.allBooks
-        .map(b => b.genres)
-        .flat())]
-    : null
+  const genresResponse = useQuery(ALL_GENRES)
+  const genres = genresResponse.data
+    ? genresResponse.data.allGenres
+    : []
+
+  const [loadBooks, booksResponse] = useLazyQuery(ALL_BOOKS, {
+    variables: { genres: selectedGenres },
+    pollInterval: 1000
+  })
+
+  useEffect(() => {
+    if (selectedGenres.length === 0)
+      loadBooks()
+
+    if (booksResponse.data)
+      setBooks(booksResponse.data.allBooks)
+  }, [selectedGenres.length, loadBooks, booksResponse.data] )
 
   const genreFilterClick = (genre) => {
     if (selectedGenres.includes(genre)) {
@@ -44,7 +55,9 @@ const Books = (props) => {
                 size='tiny'
                 icon
                 labelPosition='right'
-                onClick={() => genreFilterClick(genre)}
+                onClick={() => {
+                  genreFilterClick(genre)
+                }}
               >
                 {genre}
                 {selectedGenres.includes(genre)
@@ -65,7 +78,7 @@ const Books = (props) => {
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {books.data.allBooks
+          {books
             .filter(book => {
               if (selectedGenres.length === 0) return true
               return book.genres.some(genre => selectedGenres.includes(genre))

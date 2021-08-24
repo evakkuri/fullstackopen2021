@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Button, Container, Menu, Message, Transition, Dropdown } from 'semantic-ui-react'
 import { useApolloClient } from '@apollo/client'
 
@@ -47,6 +47,13 @@ const App = () => {
   const [token, setToken] = useState(null)
 
   const client = useApolloClient()
+
+  useEffect(() => {
+    const loggedInUserToken = window.localStorage.getItem('library-user-token')
+    if (loggedInUserToken) {
+      setToken(loggedInUserToken)
+    }
+  }, [setToken])
 
   const menuStyle = {
     padding: '10px',

@@ -55,7 +55,8 @@ const typeDefs = gql`
   type Query {
     bookCount: Int!
     authorCount: Int!
-    allBooks(author: String, genre: String): [Book]!
+    allGenres: [String]!
+    allBooks(genres: [String]): [Book]
     allAuthors: [Author!]!
     findAuthorByName: Author
     me: User
@@ -91,11 +92,15 @@ const resolvers = {
   Query: {
     bookCount: () => Book.collection.countDocuments(),
     authorCount: () => Author.collection.countDocuments(),
+    allGenres: () => Book.find({}).distinct('genres'),
     allBooks: async (_parent, args) => {
-      const books = await Book.find({}).populate('author')
+      const books = args.genres
+        ? await Book
+          .find({ genres: { $in: args.genres } })
+          .populate('author')
+        : await Book.find({}).populate('author')
+
       return books
-        .filter((book) => args.author ? book.author.name === args.author : true)
-        .filter((book) => args.genre ? book.genres.includes(args.genre) : true)
     },
     allAuthors: () => Author.find({}),
     findAuthorByName: (_parent, args) => Author.findOne({ name: args.name }),
@@ -189,8 +194,8 @@ const resolvers = {
 
       const saltRounds = 10
       const passwordHash = await bcrypt.hash(args.password, saltRounds)
-      const user = new User({ 
-        username: args.username, 
+      const user = new User({
+        username: args.username,
         passwordHash,
         favoriteGenre: args.favoriteGenre
       })
