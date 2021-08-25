@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import { useMutation } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
 import { Form, Grid, Container, Message } from 'semantic-ui-react'
 
-import { LOGIN } from '../queries'
+import { LOGIN, CURRENT_USER } from '../queries'
 
 const LoginForm = ({ show, token, setToken }) => {
 
@@ -15,6 +15,8 @@ const LoginForm = ({ show, token, setToken }) => {
       setErrorMessage(error.graphQLErrors[0].message)
     }
   })
+
+  const currentUser = useQuery(CURRENT_USER)
 
   useEffect(() => {
     if (result.data) {
@@ -29,7 +31,8 @@ const LoginForm = ({ show, token, setToken }) => {
   if (token) return (
     <Container>
       <h2>User information</h2>
-      <p><b>Username:</b> { }</p>
+      <p><b>Username:</b> {currentUser.data ? currentUser.data.me.username : ''}</p>
+      <p><b>Favorite genre:</b> {currentUser.data ? currentUser.data.me.favoriteGenre : ''}</p>
     </Container>
   )
 

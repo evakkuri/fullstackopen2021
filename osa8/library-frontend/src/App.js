@@ -6,6 +6,7 @@ import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
 import Login from './components/LoginForm'
+import Recommended from './components/Recommended'
 
 const LoginMenuItem = ({ token, setPage, setToken, apolloClient }) => {
   if (!token) {
@@ -89,6 +90,11 @@ const App = () => {
             active={page === 'books'}
             onClick={() => setPage('books')}
           />
+          <Menu.Item
+            name='Recommended'
+            active={page === 'recommended'}
+            onClick={() => setPage('recommended')}
+          />
           <Menu.Menu position='right'>
             <Button
               inverted
@@ -118,6 +124,7 @@ const App = () => {
         <div style={{ marginTop: '30px' }}>
           <Authors show={page === 'authors'} loggedIn={token ? true : false} />
           <Books show={page === 'books'} />
+          <Recommended show={page === 'recommended'} />
           <NewBook
             show={page === 'add'}
             notifyError={notifyError}

@@ -39,7 +39,7 @@ const Books = (props) => {
     return null
   }
 
-  if (books.loading) {
+  if (booksResponse.loading) {
     return <div>Loading...</div>
   }
 
@@ -79,10 +79,6 @@ const Books = (props) => {
         </Table.Header>
         <Table.Body>
           {books
-            .filter(book => {
-              if (selectedGenres.length === 0) return true
-              return book.genres.some(genre => selectedGenres.includes(genre))
-            })
             .map(a =>
               <Table.Row key={a.title}>
                 <Table.Cell>{a.title}</Table.Cell>
