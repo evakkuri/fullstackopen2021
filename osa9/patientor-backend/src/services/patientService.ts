@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import patientData from '../../data/patientsExpanded';
-import { Patient, NonSensitivePatient, NewPatient, EntryWithoutId } from '../types';
+import { Patient, NonSensitivePatient, NewPatient, Entry } from '../types';
 
 let patients: Patient[] = patientData;
 
@@ -43,14 +43,16 @@ const addPatient = (patient: NewPatient): Patient => {
   return newPatient;
 };
 
-const addEntry = (patientId: string, newEntry: EntryWithoutId): Patient | undefined => {
+const addEntry = (patientId: string, newEntry: Entry): Patient | undefined => {
+  console.log("Adding entry...");
+
   const currPatient = patients.find((p) => p.id === patientId);
 
   if (!currPatient) return undefined;
 
   const patientWithNewEntry: Patient = {
     ...currPatient,
-    entries: currPatient.entries.concat({...newEntry, id: uuidv4()})
+    entries: currPatient.entries.concat(newEntry)
   };
 
   patients = patientData.map(

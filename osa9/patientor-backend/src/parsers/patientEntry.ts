@@ -24,14 +24,22 @@ const parseDischargeNote = (fieldName: string, fieldValue: unknown): DischargeNo
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const isHealthCheckRating = (param: any): param is HealthCheckRating => {
+  console.log(`Checking if ${param} is in ${Object.values(HealthCheckRating)}...`);
   return Object.values(HealthCheckRating).includes(param);
 };
 
 const parseHealthCheckRating = (fieldName: string,
   fieldValue: unknown): HealthCheckRating => {
-  if (!fieldValue || !isHealthCheckRating(fieldValue)) {
+  console.log(`Parsing ${fieldName}: ${fieldValue} to health check rating...`);
+
+  if(fieldValue === undefined) {
+    throw new Error(`Missing value for field ${fieldName}: ${fieldValue}`);
+  }
+
+  if (!isHealthCheckRating(fieldValue)) {
     throw new Error(`Incorrect or missing value for field ${fieldName}: ${fieldValue}`);
   }
+  
   return fieldValue;
 };
 
@@ -92,6 +100,8 @@ const parseSickLeave = (fieldName: string, fieldValue: unknown): SickLeave | und
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const toNewEntry = (entry: any): EntryWithoutId => {
+  console.log("Parsing new entry...");
+
   const type = parseEntryType('type', entry.type);
 
   const baseEntry = {

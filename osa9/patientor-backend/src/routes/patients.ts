@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+import { v4 as uuidv4 } from 'uuid';
 
 import express from 'express';
 import patientService from '../services/patientService';
 import { toNewPatient } from '../parsers/patient';
 import { toNewEntry } from '../parsers/patientEntry';
-import { EntryWithoutId } from '../types';
+import { Entry } from '../types';
 
 const router = express.Router();
 
@@ -30,10 +31,13 @@ router.post('/', (req, res) => {
 });
 
 router.post('/:id/entries', (req, res) => {
-  //console.log(req.body);
+  console.log(req.body);
 
   try {
-    const newEntry: EntryWithoutId = toNewEntry(req.body);
+    const newEntry: Entry = {
+      ...toNewEntry(req.body),
+      id: uuidv4(),
+    };
 
     const updatedPatient = patientService.addEntry(
       req.params.id,

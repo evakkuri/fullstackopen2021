@@ -15,6 +15,19 @@ content-type: application/json
   }
 }
 
+### Success: Add 'HealthCheckRating' entry to John McClane
+POST http://localhost:3001/api/patients/d2773336-f723-11e9-8f0b-362b9e155667/entries
+content-type: application/json
+
+{
+  "id": "d911e46d-70b3-4d90-b090-4535c7cf8fb1",
+  "date": "2021-01-01",
+  "type": "HealthCheck",
+  "specialist": "Test Specialist",
+  "description": "Test description",
+  "healthCheckRating": "Healthy"
+}
+
 ### Fail: Add 'Hospital' entry to John McClane
 POST http://localhost:3001/api/patients/d2773336-f723-11e9-8f0b-362b9e155667/entries
 content-type: application/json

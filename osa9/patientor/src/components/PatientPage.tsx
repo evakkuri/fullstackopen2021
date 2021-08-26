@@ -8,8 +8,9 @@ import { apiBaseUrl } from "../constants";
 import { useStateValue } from "../state";
 import { Patient } from "../types";
 import { addPatient } from "../state/reducer";
-import { Entry } from "../types";
+import { Entry, HealthCheckEntry } from "../types";
 import { assertNever } from "../utils";
+import { AddHealthCheckEntryForm, HealthCheckEntryFormValues } from "./AddEntryForm";
 
 const genderToIcon: { [id: string]: SemanticICONS | undefined } = {
   male: "mars",
@@ -70,21 +71,24 @@ const EntryList = (props: { entryList: Entry[] }) => {
 
   return (
     <Card.Group>
-      {props.entryList.map((entry) => {
-        return (
-          <Card key={entry.id} fluid>
-            <Card.Content>
-              <Card.Header>
-                {entry.date} <Icon name={entryTypeToIcon[entry.type]} />
-              </Card.Header>
-            </Card.Content>
-            <Card.Content>
-              <i>{entry.description}</i>
-              {renderEntry(entry)}
-            </Card.Content>
-          </Card>
-        );
-      })}
+      {props.entryList
+        .sort((entry_a, entry_b) =>
+          new Date(entry_a.date).valueOf() - new Date(entry_b.date).valueOf())
+        .map((entry) => {
+          return (
+            <Card key={entry.id} fluid>
+              <Card.Content>
+                <Card.Header>
+                  {entry.date} <Icon name={entryTypeToIcon[entry.type]} />
+                </Card.Header>
+              </Card.Content>
+              <Card.Content>
+                <i>{entry.description}</i>
+                {renderEntry(entry)}
+              </Card.Content>
+            </Card>
+          );
+        })}
     </Card.Group>
   );
 };
@@ -109,11 +113,33 @@ const PatientPage = () => {
   }, [dispatch]);
 
   const patientToShow = state.patients[id];
-  console.log(patientToShow);
 
   if (!patientToShow) {
     return null;
   }
+
+  const healthCheckEntryFormSubmit = async (values: HealthCheckEntryFormValues) => {
+    try {
+      type HealthCheckEntryRequest = Omit<HealthCheckEntry, "id">;
+
+      const requestValues: HealthCheckEntryRequest = {
+        ...values,
+        type: "HealthCheck"
+      };
+
+      const {data: updatedPatient} = await axios.post<Patient>(
+        `${apiBaseUrl}/patients/${id}/entries`,
+        requestValues
+      );
+
+      //console.log(response.data);
+      dispatch({ type: "ADD_PATIENT", payload: updatedPatient });
+      //closeModal();
+    } catch (e) {
+      console.error(e.response?.data || 'Unknown Error');
+      //setError(e.response?.data?.error || 'Unknown error');
+    }
+  };
 
   return (
     <div>
@@ -124,6 +150,8 @@ const PatientPage = () => {
       </p>
       <h2>Entries:</h2>
       <EntryList entryList={patientToShow.entries} />
+      <h3>Add healthcheck entry:</h3>
+      <AddHealthCheckEntryForm onSubmit={healthCheckEntryFormSubmit} />
     </div>
   );
 };
